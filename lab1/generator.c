@@ -19,11 +19,7 @@ void gen_char(char* str, int* position, const char* char_set, size_t char_set_le
 }
 
 void gen_strings(int strings, int max_command_length, int max_keylist_length) {
-
-    // str_len = command len + space + keylist len + '\0' (max 256)
-
-    int str_len = max_command_length + 1 + max_keylist_length + 1;
-    char* str = (char*) calloc(str_len, 1);
+    char buf[BUF_SIZE] = {0};
     int position = 0;
 
     const char* command_char_set = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789./";
@@ -39,16 +35,15 @@ void gen_strings(int strings, int max_command_length, int max_keylist_length) {
     srand(time(0));
 
     for (int i = 0; i < strings; ++i) {
-        gen_str (str, max_command_length, &position, command_char_set, command_char_set_len);   // Always
-        gen_char(str, &position, blank_char_set, blank_char_set_len);                           // Always
-        gen_str (str, max_keylist_length - 1, &position, keylist_char_set, keylist_char_set_len); // Optional
-        gen_char(str, &position, allnum_char_set, allnum_char_set_len);                         // Always
-        
-        puts(str);
-        memset(str, 0, str_len);
+        gen_str (buf, max_command_length, &position, command_char_set, command_char_set_len);     // Always
+        gen_char(buf, &position, blank_char_set, blank_char_set_len);                             // Always
+        gen_str (buf, max_keylist_length - 1, &position, keylist_char_set, keylist_char_set_len); // Optional
+        gen_char(buf, &position, allnum_char_set, allnum_char_set_len);                           // Always
+
+        buf[position] = '\0';        
+        puts(buf);
         position = 0;
     }
-    free(str);
 }
 
 int main(int argc, const char* argv[]) {
