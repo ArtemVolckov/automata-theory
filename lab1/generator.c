@@ -1,9 +1,6 @@
-#include <stdio.h>
 #include <time.h>
 #include <stdlib.h>
-#include <string.h>
-
-#define BUF_SIZE 256
+#include "config.h"
 
 void gen_str(char* str, int max_add_len, int* position, const char* char_set, size_t char_set_len) { 
     if (max_add_len == 0) 
@@ -54,7 +51,7 @@ void gen_strings(int strings, int max_command_length, int max_keylist_length) {
     free(str);
 }
 
-int main(int argc, char* argv[]) {
+int main(int argc, const char* argv[]) {
     
     // Array of default parameters
     // params[0] -> number of strings

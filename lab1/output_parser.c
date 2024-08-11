@@ -1,10 +1,6 @@
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <assert.h>
-#include "../include/hashmap.h"
+#include "config.h"
+#include "hashmap.h"
 
-#define BUF_SIZE 256
 #define DELIM " \t"
 
 void collect_print_statistics() {

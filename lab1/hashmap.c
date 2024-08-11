@@ -1,7 +1,5 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "../include/hashmap.h"
+#include "config.h"
+#include "hashmap.h"
 
 size_t get_hash(const char* str, size_t capacity) {
     size_t sum = 0;
@@ -11,12 +9,12 @@ size_t get_hash(const char* str, size_t capacity) {
     return (sum % capacity);
 }
 
-void hashmap_init(Hashmap* h, size_t capacity) {
-    if (h == NULL && capacity < 1)
+void hashmap_init(Hashmap* h, size_t capacity, double factor) {
+    if (h == NULL || capacity < 1)
         abort();
-    h->count = 0;
+    h->size = 0;
     h->capacity = capacity;
-    h->factor = FACTOR;
+    h->factor = factor;
     h->items = (Item**) calloc(capacity, sizeof(Item*)); 
 }
 
@@ -47,7 +45,7 @@ void keylist_push(Hashmap* h, ListNode* list_ptr, char* key_arr[], int key_arr_s
         list_ptr->key = key_arr[i];
         list_tmp->next = list_ptr;
     } 
-    h->count += 1;
+    h->size += 1;
 }
 
 void gen_item_list(Hashmap* h, size_t hash, char* command, char* key_arr[], Item* item_tmp, ListNode** list_save) {
@@ -89,8 +87,8 @@ void collect_item_fields(Item* item_ptr, char** command, char*** key_arr, int* k
 void hashmap_resize(Hashmap* h) {
     Hashmap new_h;
     int old_capacity = h->capacity;
-    size_t count = h->count;
-    hashmap_init(&new_h, old_capacity * 2);
+    size_t count = h->size;
+    hashmap_init(&new_h, old_capacity * 2, h->factor);
     Item* item_ptr = NULL;
     char* command = NULL;
     char** key_arr = NULL;
@@ -114,7 +112,7 @@ void hashmap_resize(Hashmap* h) {
 }
 
 void hashmap_add(Hashmap* h, char* command, char* key_arr[], int key_arr_size) {
-    if ((h->count / h->capacity) > h->factor)
+    if ((h->size / h->capacity) > h->factor)
         hashmap_resize(h);
     size_t hash = get_hash(command, h->capacity);
     Item* item_ptr = h->items[hash], *item_tmp = NULL;
@@ -142,7 +140,7 @@ void hashmap_print(Hashmap* h) {
         abort();
     Item* item_ptr = NULL; 
     ListNode* list_ptr = NULL;
-    size_t count = h->count;
+    size_t count = h->size;
 
     for (size_t i = 0; i < h->capacity && count != 0; ++i) {
         item_ptr = h->items[i];
@@ -166,16 +164,17 @@ void hashmap_print(Hashmap* h) {
 
 void hashmap_free(Hashmap* h) {
     if (h == NULL)
-        abort();
+        return;
     Item* item_ptr = NULL, *item_tmp = NULL;
     ListNode* list_ptr = NULL, *list_tmp = NULL;
-    size_t count = h->count;
+    size_t size = h->size;
+    size_t capacity = h->capacity;
 
-    for (size_t i = 0; i < h->capacity && count != 0; ++i) {
+    for (size_t i = 0; i < capacity && size != 0; ++i) {
         item_ptr = h->items[i];
 
         if (item_ptr != NULL)  
-            count -= 1;
+            size -= 1;
 
         while (item_ptr != NULL) {
             list_ptr = item_ptr->keys;
@@ -195,7 +194,6 @@ void hashmap_free(Hashmap* h) {
 
 // Tests
 
-#if 0
 int main() {
     Hashmap h;
     char* command = "gcc";
@@ -205,11 +203,10 @@ int main() {
     int key_arr_size = sizeof(key_arr) / sizeof(key_arr[0]);
     int key_arr2_size = sizeof(key_arr2) / sizeof(key_arr2[0]);
 
-    hashmap_init(&h, 1);
+    hashmap_init(&h, 1, FACTOR);
     hashmap_add(&h, command, key_arr, key_arr_size);
     hashmap_add(&h, command, key_arr, key_arr_size);
     hashmap_add(&h, command2, key_arr2, key_arr2_size);
     hashmap_print(&h);
     hashmap_free(&h);
 }
-#endif

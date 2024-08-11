@@ -1,6 +1,5 @@
-#include <stdio.h>
 #include <regex.h>
-#include <string.h>
+#include "config.h"
 
 // Previous variant of regex: "^[[:alnum:]./]+[[:blank:]][[:alnum:][:blank:]]*[[:alnum:]]$"
 // regcomp with REG_EXTENDED flag is required
@@ -21,7 +20,7 @@ void print_matching_str(regex_t* regex, const char* cline) {
         printf("%s\n", cline);
 }
 
-int main(int argc, char* argv[]) {
+int main(int argc, const char* argv[]) {
     regex_t regex;
     const char* cregex = "^[[:alnum:]./][[:alnum:]./]*[[:blank:]][[:alnum:][:blank:]]*[[:alnum:]]$";
     char buf[BUF_SIZE] = {0};
