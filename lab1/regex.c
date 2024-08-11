@@ -24,8 +24,7 @@ void print_matching_str(regex_t* regex, const char* cline) {
 int main(int argc, char* argv[]) {
     regex_t regex;
     const char* cregex = "^[[:alnum:]./][[:alnum:]./]*[[:blank:]][[:alnum:][:blank:]]*[[:alnum:]]$";
-    int str_len = 0;
-    char buf[BUF_SIZE];
+    char buf[BUF_SIZE] = {0};
     void (*print_function)(regex_t*, const char*) = &print_status_and_str;
 
     if (argc > 2) {
@@ -44,10 +43,10 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     while (fgets(buf, BUF_SIZE, stdin)) {
-        str_len = strlen(buf) - 1;
+        size_t str_len = strlen(buf);
 
-        if (buf[str_len] == '\n')
-            buf[str_len] = '\0';
+        if (buf[str_len - 1] == '\n')
+            buf[str_len - 1] = '\0';
         print_function(&regex, buf);
     }
     regfree(&regex);
