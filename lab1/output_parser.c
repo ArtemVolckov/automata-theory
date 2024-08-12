@@ -1,64 +1,47 @@
 #include "config.h"
 #include "hashmap.h"
 
-#define DELIM " \t"
+#define HASHMAP_CAPACITY 10
+#define DELIM "\t \n"
 
-void collect_print_statistics() {
-    Hashmap h;
-    hashmap_init(&h, 10);
-    char buf[BUF_SIZE] = {0}, additional_buf[BUF_SIZE] = {0};
-    const char* match_str = "Match", *nomatch_str = "Nomatch";
-    int match_str_len = strlen(match_str), nomatch_str_len = strlen(nomatch_str);
-    char command[BUF_SIZE] = {0}, *token = NULL;
-    char** key_arr = NULL;
-    int counter = 0, offset = 0, additional_offset = 0, buf_len = 0;
+void collect_statistics(Hashmap* h) {
+    char buf[BUF_SIZE] = {0};
+    char* token, *command;
+    char* key_arr[BUF_SIZE];
+    int counter = 0;
 
     while (fgets(buf, BUF_SIZE, stdin)) {
-        buf_len = strlen(buf);
-        memcpy(additional_buf, buf, buf_len);
-
-        if (buf[0] == ' ' || buf[0] == '\t' || buf[buf_len - 2] == ' ' || buf[buf_len - 2] == '\t' || buf_len < nomatch_str_len + 5)
-            abort();
         token = strtok(buf, DELIM);
+        command = token;
 
-        if (strncmp(token, match_str, match_str_len)) {
+        while (token != NULL) {
             token = strtok(NULL, DELIM);
-            //command = token;
-            offset = token - buf;
-            token = strtok(NULL, DELIM);
-            additional_offset = token - buf;
-            //memcpy(command, token + )
-            offset = token - buf;
-            memcpy(additional_buf, buf + offset, buf_len - offset);
-
-            while (token != NULL) {
-                counter += 1;
-                token = strtok(NULL, DELIM);
+            if (token == NULL)
+                continue;
+            key_arr[counter] = token;
+            counter++;
+        }
+        for (int i = 0; i < counter - 1; ++i) {
+            for (int j = i + 1; j < counter; ++j) {
+                if (strcmp(key_arr[i], key_arr[j]) == 0) {
+                    for (int k = j; k < counter - 1; ++k) {
+                        key_arr[k] = key_arr[k + 1];
+                    }
+                    counter -= 1;
+                    j -= 1;
+                } 
             }
-            key_arr = (char**) calloc(counter, sizeof(char*));
-            counter = 0;
-            token = strtok(buf, DELIM);
-
-            while (token != NULL) {
-                token = strtok(NULL, DELIM);
-                key_arr[counter] = token;
-                counter += 1;
-            }
-            hashmap_add(&h, command, key_arr, counter);
-            counter = 0;
-            free(key_arr);
         }
-        else if (strncmp(token, nomatch_str, nomatch_str_len)) {
-            continue;
-        }
-        else {
-            abort();
-        }
+        hashmap_add(h, command, key_arr, counter);
+        counter = 0;       
     }
-    hashmap_free(&h);
 }
 
 int main() {
-    collect_print_statistics();
+    Hashmap h;
+    hashmap_init(&h, HASHMAP_CAPACITY, FACTOR);
+    collect_statistics(&h);
+    hashmap_print(&h);
+    hashmap_free(&h);
     return 0;
 }

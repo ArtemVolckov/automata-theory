@@ -23,7 +23,7 @@ void print_matching_str(regex_t* regex, const char* cline) {
 int main(int argc, const char* argv[]) {
     regex_t regex;
     const char* cregex = "^[[:alnum:]./][[:alnum:]./]*[[:blank:]][[:alnum:][:blank:]]*[[:alnum:]]$";
-    char buf[BUF_SIZE] = {0};
+    char buf[BUF_SIZE + 1] = {0};
     void (*print_function)(regex_t*, const char*) = &print_status_and_str;
 
     if (argc > 2) {
