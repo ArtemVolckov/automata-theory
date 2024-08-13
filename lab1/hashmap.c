@@ -19,7 +19,7 @@ void hashmap_init(Hashmap* h, size_t capacity, double factor) {
 }
 
 void hashmap_resize(Hashmap* h) {
-    size_t old_capacity = h->capacity, size = h->size, size_save = h->size;
+    size_t old_capacity = h->capacity, size = h->size, size_save = 0;
     size_t new_capacity = old_capacity * 2;
     Hashmap h_new;
     hashmap_init(&h_new, new_capacity, h->factor);
@@ -44,12 +44,16 @@ void hashmap_resize(Hashmap* h) {
                 new_item_ptr = new_item_ptr->next;
             }
             if (new_item_ptr_tmp == NULL) {
-                h_new.items[hash] = item_ptr; 
+                h_new.items[hash] = item_ptr;
+                item_ptr = item_ptr->next;
+                h_new.items[hash]->next = NULL;
+                size_save += 1; 
             }
             else {
                 new_item_ptr_tmp->next = item_ptr;
+                item_ptr = item_ptr->next;
+                new_item_ptr_tmp->next->next = NULL; 
             }
-            item_ptr = item_ptr->next; 
         } 
     }
     free(h->items);
@@ -63,7 +67,9 @@ void hashmap_add(Hashmap* h, char* command, char* key_arr[], int key_arr_size) {
     }
     size_t hash = get_hash(command, h->capacity), command_len = strlen(command), key_len;
     Item* item_ptr = h->items[hash], *item_tmp = NULL;
-    ListNode* list_ptr, *list_ptr_tmp;
+    ListNode* list_ptr = NULL, *list_ptr_tmp = NULL;
+
+    // check command match
 
     while (item_ptr != NULL) {
         if (strcmp(item_ptr->command, command) == 0) {
@@ -98,6 +104,9 @@ void hashmap_add(Hashmap* h, char* command, char* key_arr[], int key_arr_size) {
         item_tmp = item_ptr;
         item_ptr = item_ptr->next;
     }
+
+    // handle new command
+
     if (item_tmp != NULL) {
         item_tmp->next = malloc(sizeof(Item));
         item_ptr = item_tmp->next;

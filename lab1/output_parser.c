@@ -1,7 +1,7 @@
 #include "config.h"
 #include "hashmap.h"
 
-#define HASHMAP_CAPACITY 10
+#define HASHMAP_CAPACITY 1
 #define DELIM "\t \n"
 
 void collect_statistics(Hashmap* h) {

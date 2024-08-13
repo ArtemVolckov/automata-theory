@@ -1,0 +1,42 @@
+%header SmcRecognizer.h
+%class SmcRecognizer
+
+%include "sm_config.h"
+
+%start MainMap::Start
+
+%map MainMap
+%%
+Default
+{
+    reset()                             Start   {Incorrect();}
+    EOS                                 nil     {}
+    Default                             Error   {}
+}
+
+Error {}
+
+Start
+{
+    letter(LET: char) [ALNUM_DOT_SLASH] Command {}
+}
+
+Command
+{
+    letter(LET: char) [ALNUM_DOT_SLASH] nil     {}
+    letter(LET: char) [BLANK]           Blank   {}
+}
+
+Blank
+{
+    letter(LET: char) [BLANK]           nil     {}
+    letter(LET: char) [ALNUM]           Key     {}
+}
+
+Key
+{
+    letter(LET: char) [ALNUM]           nil     {} 
+    letter(LET: char) [BLANK]           Blank   {}
+    EOS                                 nil     {Correct();}
+}
+%%
