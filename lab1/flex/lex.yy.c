@@ -447,6 +447,14 @@ char *yytext;
 #line 2 "lexer.l"
 #include "../config.h"
 
+double total_time_spent = 0.0;
+
+int is_correct;
+size_t counter = 0; 
+char buf[BUF_SIZE] = {0};
+
+struct timespec start, end;
+
 // Format: match|nomatch "input_string"
 void print_status_and_str(const char* str, int is_correct) {
     if (is_correct == 0)  
@@ -461,12 +469,9 @@ void print_matching_str(const char* str, int is_correct) {
         printf("%s\n", str);
 }
 
-int is_correct;
-size_t counter = 0; 
-char buf[BUF_SIZE] = {0};
 void (*print_function)(const char*, int) = &print_status_and_str;
-#line 469 "lex.yy.c"
-#line 470 "lex.yy.c"
+#line 474 "lex.yy.c"
+#line 475 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -686,10 +691,10 @@ YY_DECL
 		}
 
 	{
-#line 24 "lexer.l"
+#line 29 "lexer.l"
 
 
-#line 693 "lex.yy.c"
+#line 698 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -750,12 +755,16 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 26 "lexer.l"
+#line 31 "lexer.l"
 {
+    clock_gettime(CLOCK_MONOTONIC, &end);
+    total_time_spent += (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
+
     buf[counter] = '\0';
     print_function(buf, is_correct);
     counter = 0;
     is_correct = 0;
+    clock_gettime(CLOCK_MONOTONIC, &start); 
 }
 	YY_BREAK
 case 2:
@@ -763,7 +772,7 @@ case 2:
 (yy_c_buf_p) = yy_cp -= 1;
 YY_DO_BEFORE_ACTION; /* set up yytext again */
 YY_RULE_SETUP
-#line 33 "lexer.l"
+#line 42 "lexer.l"
 {
     is_correct = 1;
     strncpy(buf, yytext, BUF_SIZE);
@@ -772,7 +781,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 39 "lexer.l"
+#line 48 "lexer.l"
 { 
     if (counter != BUF_SIZE - 1) {
         buf[counter] = yytext[0];
@@ -782,10 +791,10 @@ YY_RULE_SETUP
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 46 "lexer.l"
+#line 55 "lexer.l"
 ECHO;
 	YY_BREAK
-#line 789 "lex.yy.c"
+#line 798 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1793,7 +1802,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 46 "lexer.l"
+#line 55 "lexer.l"
 
 
 int main(int argc, char* argv[]) {
@@ -1807,8 +1816,12 @@ int main(int argc, char* argv[]) {
             return 1;
         }
         print_function = &print_matching_str;
-    } 
+    }
+    clock_gettime(CLOCK_MONOTONIC, &start); 
     yylex();
+    clock_gettime(CLOCK_MONOTONIC, &end);
+    total_time_spent += (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
+    printf("Total time spent using flex: %.9lf seconds\n", total_time_spent);
     yylex_destroy();
     return 0;
 }

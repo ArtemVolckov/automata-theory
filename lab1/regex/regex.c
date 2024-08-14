@@ -1,12 +1,23 @@
 #include <regex.h>
 #include "../config.h"
 
+double total_time_spent = 0.0;
+
 // Previous variant of regex: "^[[:alnum:]./]+[[:blank:]][[:alnum:][:blank:]]*[[:alnum:]]$"
 // regcomp with REG_EXTENDED flag is required
 
 // Format: match|nomatch "input_string"
 void print_status_and_str(regex_t* regex, const char* cline) {
-    if (regexec(regex, cline, 0, NULL, 0))  
+    struct timespec start, end; 
+    clock_gettime(CLOCK_MONOTONIC, &start); 
+
+    int result = regexec(regex, cline, 0, NULL, 0);
+
+    clock_gettime(CLOCK_MONOTONIC, &end);
+    double time_spent = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
+    total_time_spent += time_spent;
+    
+    if (result)  
         printf("nomatch \"%s\"\n", cline);
     else 
         printf("match   \"%s\"\n", cline);
@@ -14,8 +25,15 @@ void print_status_and_str(regex_t* regex, const char* cline) {
 
 // Format: input_string (required for output_parser.c)
 void print_matching_str(regex_t* regex, const char* cline) {
-    if (!regexec(regex, cline, 0, NULL, 0))  
+    struct timespec start, end;
+    clock_gettime(CLOCK_MONOTONIC, &start);
+
+    if (!regexec(regex, cline, 0, NULL, 0)) {
+        clock_gettime(CLOCK_MONOTONIC, &end);
+        double time_spent = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
+        total_time_spent += time_spent;
         printf("%s\n", cline);
+    }
 }
 
 int main(int argc, const char* argv[]) {
@@ -47,5 +65,6 @@ int main(int argc, const char* argv[]) {
         print_function(&regex, buf);
     }
     regfree(&regex);
+    printf("Total time spent using regex: %.9lf seconds\n", total_time_spent);
     return 0;
 }
