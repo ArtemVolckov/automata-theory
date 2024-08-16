@@ -160,4 +160,4 @@ CMakeFiles/main.dir/main.cpp.o: /home/artem/ta/lab2/main.cpp \
  /usr/include/c++/13/ext/aligned_buffer.h \
  /usr/include/c++/13/bits/enable_special_members.h \
  /usr/include/c++/13/bits/node_handle.h \
- /usr/include/c++/13/bits/erase_if.h /home/artem/ta/lab2/ast/ast.hpp
+ /usr/include/c++/13/bits/erase_if.h
