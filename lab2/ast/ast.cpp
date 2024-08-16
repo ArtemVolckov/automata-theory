@@ -1,13 +1,9 @@
 #include "ast.hpp"
 
 void Parser::report(std::string_view err_msg) {
-    this->err_msg = err_msg;   
-}
-
-void Parser::print_report_and_abort() {
     std::cerr << err_msg << std::endl;
-    std::cerr << "Parser error: Compilation failed" << std::endl;
-    abort();
+    std::cerr << "Parser error: Compilation failed" << std::endl; 
+    abort();  
 }
 
 Node* Parser::parse_group_ref() {
@@ -19,16 +15,61 @@ Node* Parser::parse_symbol() {
 }
 
 Node* Parser::parse_groupped_expr() {
-    return nullptr;
+    bool match = match_and_consume("(");
+    std::string expr;
+
+    if (!match)
+        return nullptr;
+
+    expr = parse_until_char_or_end(')');
+
+    if (expr.empty())
+        report("Expected expression inside brackets");
+    if (!match_and_consume(")"))
+        report("Expected ')'");
+    
+    int old_position = position;
+    std::string old_cregex = cregex;
+    position = 0;
+    cregex = expr;
+    
+    Node* new_node = parse_expr();
+
+    position = old_position;
+    cregex = old_cregex;
+    return new_node;
 }
 
 Node* Parser::parse_named_group() {
     bool match = match_and_consume("(<");
-    std::string group_name;
+    std::string group_name, expr;
 
     if (!match)
         return nullptr;
-    return nullptr;
+    group_name = parse_until_char_or_end('>');
+    
+    if (group_name.empty()) 
+        report("Expected group name");
+    if (!match_and_consume(">"))
+       report("Expected '>'");
+
+    expr = parse_until_char_or_end(')');
+
+    if (expr.empty())
+        report("Expected expression inside group");
+    if (!match_and_consume(")"))
+        report("Expected ')'");
+
+    int old_position = position;
+    std::string old_cregex = cregex;
+    position = 0;
+    cregex = expr;
+
+    Node* new_node = new Node(NodeType::GROUP, group_name, parse_expr());
+    
+    position = old_position;
+    cregex = old_cregex;
+    return new_node;
 }
 
 Node* Parser::parse_atom() {
@@ -59,19 +100,14 @@ Node* Parser::parse_or() {
     // Return
 }
 
-void Parser::parse_expr(Ast* ast) {
+Node* Parser::parse_expr() {
     Node* root = parse_or();
 
     if (root == nullptr) {
-        if (cregex.size() == 0) 
-            // Success. Regex for empty lines
-            ast->root = root; 
-        else 
-            print_report_and_abort();
+        if (cregex.size() != 0) 
+            report("Parse expr error");
     }
-    else if (root != nullptr && position == cregex.size())
-        // Succes
-        ast->root = root;
-    else 
-        print_report_and_abort();
+    else if (root != nullptr && position != cregex.size())
+        report("Parse expr error");
+    return root;
 }

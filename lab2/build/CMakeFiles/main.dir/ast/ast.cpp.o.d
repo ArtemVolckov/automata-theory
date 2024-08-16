@@ -157,4 +157,6 @@ CMakeFiles/main.dir/ast/ast.cpp.o: /home/artem/ta/lab2/ast/ast.cpp \
  /usr/include/c++/13/bits/stl_uninitialized.h \
  /usr/include/c++/13/bits/stl_vector.h \
  /usr/include/c++/13/bits/stl_bvector.h \
- /usr/include/c++/13/bits/vector.tcc
+ /usr/include/c++/13/bits/vector.tcc /usr/include/c++/13/variant \
+ /usr/include/c++/13/bits/enable_special_members.h \
+ /usr/include/c++/13/bits/parse_numbers.h

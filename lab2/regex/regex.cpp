@@ -4,5 +4,5 @@
 void Regex::compile(std::string_view cregex) {
     Ast ast;
     Parser parser(cregex);
-    parser.parse_expr(&ast);
+    ast.root = parser.parse_expr();
 }
