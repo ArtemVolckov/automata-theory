@@ -68,10 +68,16 @@ typedef struct Node {
 
 typedef struct Ast {
     Node* root = nullptr;
+
+    ~Ast() {
+        delete root;
+    }
 } Ast;
 
 class Parser {
     private:
+        bool is_error = false;
+        std::string err_msg;
         std::string cregex;
         int position = 0;
 
@@ -118,4 +124,5 @@ class Parser {
     public:
         Parser(std::string_view cregex) : cregex(cregex) {}
         Node* parse_expr();
+        bool check_and_print_error();
 };

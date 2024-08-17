@@ -5,6 +5,6 @@ int main() {
     Regex regex;
     std::string cregex;
     std::cin >> cregex;
-    regex.compile(cregex); 
+    std::cout << regex.compile(cregex) << std::endl; 
     return 0;
 }
