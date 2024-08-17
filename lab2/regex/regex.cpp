@@ -6,7 +6,7 @@ int Regex::compile(std::string_view cregex) {
     Parser parser(cregex);
     ast.root = parser.parse_expr();
 
-    if (parser.check_and_print_error()) {
+    if (parser.check_and_print_error(ast.root)) {
         return REGCOMP_ERR;
     }
     return REGCOMP_SUCCESS;

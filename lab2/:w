@@ -1,4 +1,5 @@
 #pragma once
+
 #include <iostream>
 #include <cstdlib>
 #include <vector>
@@ -74,11 +75,10 @@ typedef struct Ast {
     ~Ast() {
         delete root;
     }
-    
-    // Simplifying the tree and checking errors with groups
+
     void ast_prepare();
     // Tree traversal with the search for groups and replacing them with their children
-    std::vector<std::pair<std::string, Node*>> collect_groups();
+    std::vector<std::pair<std::string, Node*>> collect_group_names();
 } Ast;
 
 class Parser {

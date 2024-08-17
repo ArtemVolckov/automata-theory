@@ -63,6 +63,7 @@ CMakeFiles/main.dir/ast/ast.cpp.o: /home/artem/ta/lab2/ast/ast.cpp \
   /usr/include/c++/13/bits/stl_iterator_base_funcs.h \
   /usr/include/c++/13/bits/stl_iterator_base_types.h \
   /usr/include/c++/13/bits/stl_pair.h \
+  /usr/include/c++/13/bits/stl_relops.h \
   /usr/include/c++/13/bits/stl_uninitialized.h \
   /usr/include/c++/13/bits/stl_vector.h \
   /usr/include/c++/13/bits/streambuf.tcc \
@@ -109,6 +110,7 @@ CMakeFiles/main.dir/ast/ast.cpp.o: /home/artem/ta/lab2/ast/ast.cpp \
   /usr/include/c++/13/tuple \
   /usr/include/c++/13/type_traits \
   /usr/include/c++/13/typeinfo \
+  /usr/include/c++/13/utility \
   /usr/include/c++/13/variant \
   /usr/include/c++/13/vector \
   /usr/include/ctype.h \
@@ -474,6 +476,7 @@ CMakeFiles/main.dir/regex/regex.cpp.o: /home/artem/ta/lab2/regex/regex.cpp \
   /usr/include/c++/13/bits/stl_iterator_base_funcs.h \
   /usr/include/c++/13/bits/stl_iterator_base_types.h \
   /usr/include/c++/13/bits/stl_pair.h \
+  /usr/include/c++/13/bits/stl_relops.h \
   /usr/include/c++/13/bits/stl_uninitialized.h \
   /usr/include/c++/13/bits/stl_vector.h \
   /usr/include/c++/13/bits/streambuf.tcc \
@@ -520,6 +523,7 @@ CMakeFiles/main.dir/regex/regex.cpp.o: /home/artem/ta/lab2/regex/regex.cpp \
   /usr/include/c++/13/tuple \
   /usr/include/c++/13/type_traits \
   /usr/include/c++/13/typeinfo \
+  /usr/include/c++/13/utility \
   /usr/include/c++/13/variant \
   /usr/include/c++/13/vector \
   /usr/include/ctype.h \
@@ -757,10 +761,6 @@ CMakeFiles/main.dir/regex/regex.cpp.o: /home/artem/ta/lab2/regex/regex.cpp \
 
 /usr/include/c++/13/bits/ostream_insert.h:
 
-/usr/include/x86_64-linux-gnu/bits/types/clockid_t.h:
-
-/home/artem/ta/lab2/ast/ast.cpp:
-
 /usr/include/c++/13/bits/parse_numbers.h:
 
 /usr/include/c++/13/climits:
@@ -770,6 +770,10 @@ CMakeFiles/main.dir/regex/regex.cpp.o: /home/artem/ta/lab2/regex/regex.cpp \
 /usr/include/c++/13/cstddef:
 
 /usr/include/c++/13/vector:
+
+/usr/include/wchar.h:
+
+/usr/include/c++/13/bits/memory_resource.h:
 
 /usr/include/c++/13/bits/invoke.h:
 
@@ -802,10 +806,6 @@ CMakeFiles/main.dir/regex/regex.cpp.o: /home/artem/ta/lab2/regex/regex.cpp \
 /usr/include/c++/13/bits/basic_ios.tcc:
 
 /usr/include/c++/13/bits/nested_exception.h:
-
-/usr/include/c++/13/bits/memory_resource.h:
-
-/usr/include/wchar.h:
 
 /usr/include/x86_64-linux-gnu/bits/time64.h:
 
@@ -937,6 +937,12 @@ CMakeFiles/main.dir/regex/regex.cpp.o: /home/artem/ta/lab2/regex/regex.cpp \
 
 /usr/include/c++/13/bits/stl_iterator_base_types.h:
 
+/usr/include/x86_64-linux-gnu/bits/types/clockid_t.h:
+
+/home/artem/ta/lab2/ast/ast.cpp:
+
+/usr/include/c++/13/bits/stl_relops.h:
+
 /usr/include/c++/13/bits/stl_uninitialized.h:
 
 /usr/include/c++/13/bits/stl_vector.h:
@@ -946,6 +952,12 @@ CMakeFiles/main.dir/regex/regex.cpp.o: /home/artem/ta/lab2/regex/regex.cpp \
 /usr/include/c++/13/bits/postypes.h:
 
 /usr/include/c++/13/bits/uses_allocator.h:
+
+/usr/include/x86_64-linux-gnu/bits/errno.h:
+
+/usr/include/wctype.h:
+
+/usr/include/c++/13/exception:
 
 /usr/include/x86_64-linux-gnu/bits/long-double.h:
 
@@ -1023,6 +1035,8 @@ CMakeFiles/main.dir/regex/regex.cpp.o: /home/artem/ta/lab2/regex/regex.cpp \
 
 /usr/include/c++/13/typeinfo:
 
+/usr/include/c++/13/utility:
+
 /usr/include/c++/13/bits/vector.tcc:
 
 /usr/include/c++/13/variant:
@@ -1052,9 +1066,3 @@ CMakeFiles/main.dir/regex/regex.cpp.o: /home/artem/ta/lab2/regex/regex.cpp \
 /usr/include/sched.h:
 
 /usr/include/stdlib.h:
-
-/usr/include/x86_64-linux-gnu/bits/errno.h:
-
-/usr/include/c++/13/exception:
-
-/usr/include/wctype.h:

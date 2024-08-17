@@ -1,8 +1,13 @@
 #include "ast.hpp"
 
-bool Parser::check_and_print_error() {
+bool Parser::check_and_print_error(Node* root) {
     if (is_error) {
         std::cerr << err_msg << std::endl;
+        std::cerr << "Parser error: Compilation failed" << std::endl;
+        return true;
+    }
+    else if (position != cregex.length()) {
+        std::cerr << "Expression parsing error" << std::endl;
         std::cerr << "Parser error: Compilation failed" << std::endl;
         return true;
     }
@@ -17,10 +22,9 @@ void Parser::report(std::string_view err_msg) {
 }
 
 Node* Parser::parse_group_ref() {
-    bool match = match_and_consume("<");
     std::string group_name;
 
-    if (!match) 
+    if (!match_and_consume("<")) 
         return nullptr;
     group_name = parse_until_char_or_end('>');
 
@@ -38,10 +42,9 @@ Node* Parser::parse_group_ref() {
 
 Node* Parser::parse_symbol() {
     int old_position = position;
-    bool match_check = match_and_consume("%");
     char symbol;
 
-    if (match_check) {
+    if (match_and_consume("%")) {
         if (!get_symbol(&symbol))
             position = old_position;
         else {
@@ -55,6 +58,11 @@ Node* Parser::parse_symbol() {
         return nullptr;
     if (match("|"))
         return nullptr;
+
+    if (match("(")) {
+        report("Empty '()'");
+        return nullptr; 
+    }
     if (match("?")) {
         report("Expected an expression before '?'");
         return nullptr;
@@ -64,7 +72,6 @@ Node* Parser::parse_symbol() {
         return nullptr;
     }
     if (match(")")) {
-        report("')' without '('");
         return nullptr;
     }
     if (match("{")) {
@@ -79,45 +86,29 @@ Node* Parser::parse_symbol() {
         report("'>' without '<'");
         return nullptr;
     }
+
     if (!get_symbol(&symbol))
         return nullptr;
     return new Node(NodeType::SYMBOL, symbol);
 }
 
 Node* Parser::parse_groupped_expr() {
-    bool match = match_and_consume("(");
-    std::string expr;
-
-    if (!match)
+    if (!match_and_consume("("))
         return nullptr;
 
-    expr = parse_until_char_or_end(')');
-
-    if (expr.empty()) {
-        report("Expected an expression inside '()'");
-        return nullptr;
-    }
-    if (!match_and_consume(")")) {
-        report("Expected ')'");
-        return nullptr;
-    } 
-    int old_position = position;
-    std::string old_cregex = cregex;
-    position = 0;
-    cregex = expr;
-    
     Node* new_node = parse_expr();
 
-    position = old_position;
-    cregex = old_cregex;
+    if (!match_and_consume(")")) {
+        report("Expected )");
+        return nullptr;
+    }
     return new_node;
 }
 
 Node* Parser::parse_named_group() {
-    bool match = match_and_consume("(<");
-    std::string group_name, expr;
+    std::string group_name;
 
-    if (!match)
+    if (!match_and_consume("(<"))
         return nullptr;
     group_name = parse_until_char_or_end('>');
     
@@ -129,26 +120,13 @@ Node* Parser::parse_named_group() {
        report("Expected '>'");
        return nullptr;
     }
-    expr = parse_until_char_or_end(')');
+    Node* new_node = parse_expr();
 
-    if (expr.empty()) {
-        report("Expected an expression inside the group");
-        return nullptr; 
-    }
     if (!match_and_consume(")")) {
         report("Expected ')'");
         return nullptr;
     }
-    int old_position = position;
-    std::string old_cregex = cregex;
-    position = 0;
-    cregex = expr;
-
-    Node* new_node = new Node(NodeType::GROUP, group_name, parse_expr());
-    
-    position = old_position;
-    cregex = old_cregex;
-    return new_node;
+    return new Node(NodeType::GROUP, group_name, new_node);
 }
 
 Node* Parser::parse_atom() {
@@ -283,12 +261,15 @@ Node* Parser::parse_or() {
 
 Node* Parser::parse_expr() {
     Node* root = parse_or();
-
-    if (root == nullptr) {
-        if (cregex.size() != 0) 
-            report("Expression parsing error");
-    }
-    else if (root != nullptr && position != cregex.size())
-        report("Expression parsing error");
     return root;
+}
+
+std::vector<std::pair<std::string, Node*>> collect_groups() {
+    
+}
+
+void Ast::ast_prepare() {
+    if (root == nullptr)
+        return;
+    std::vector<std::pair<std::string, Node*>> groups = collect_groups();
 }
