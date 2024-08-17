@@ -3,15 +3,59 @@
 void Parser::report(std::string_view err_msg) {
     std::cerr << err_msg << std::endl;
     std::cerr << "Parser error: Compilation failed" << std::endl; 
-    abort();  
+    exit(1);  
 }
 
 Node* Parser::parse_group_ref() {
-    return nullptr;
+    bool match = match_and_consume("<");
+    std::string group_name;
+
+    if (!match) 
+        return nullptr;
+    group_name = parse_until_char_or_end('>');
+
+    if (group_name.empty()) 
+        report("Expected group name");
+    if (!match_and_consume(">"))
+       report("Expected '>'");
+
+    return new Node(NodeType::GROUP_REFERENCE, group_name);
 }
 
 Node* Parser::parse_symbol() {
-    return nullptr;
+    int old_position = position;
+    bool match_check = match_and_consume("%");
+    char symbol;
+
+    if (match_check) {
+        if (!get_symbol(&symbol))
+            position = old_position;
+        else {
+            if (match_and_consume("%"))
+                return new Node(NodeType::SYMBOL, symbol);
+            else
+                position = old_position;
+        }
+    }
+    if (match("|"))
+        return nullptr;
+    if (match("?"))
+        report("Expected an expression before '?'");
+    if (match("..."))
+        report("Expected an expression before '...'");
+    if (match(")"))
+        report("')' without '('");
+    if (match("{"))
+        report("Expected an expression before '{'");
+    if (match("}"))
+        report("'}' without '{'");
+    if (match("<"))
+        return nullptr;
+    if (match(">"))
+        report("'>' without '<'");
+    if (!get_symbol(&symbol))
+        return nullptr;
+    return new Node(NodeType::SYMBOL, symbol);
 }
 
 Node* Parser::parse_groupped_expr() {
@@ -73,31 +117,92 @@ Node* Parser::parse_named_group() {
 }
 
 Node* Parser::parse_atom() {
+    Node* new_node = parse_named_group();
+
+    if (new_node != nullptr)
+        return new_node;
+    new_node = parse_groupped_expr();
+
+    if (new_node != nullptr)
+        return new_node;
+    new_node = parse_symbol();
+
+    if (new_node != nullptr)
+        return new_node;
+    new_node = parse_group_ref();
     
+    if (new_node != nullptr)
+        return new_node;
     return nullptr;
 }
 
 Node* Parser::parse_repeat() {
-    Node* node = parse_atom();
-    return nullptr;
+    Node* new_node = parse_atom();
+
+    if (new_node == nullptr)
+        return nullptr;
+    if (match_and_consume("?")) {
+        std::vector<int> range = {0, 1};
+        return new Node(NodeType::REPEAT, range, new_node);
+    }
+    if (match_and_consume("...")) {
+        std::vector<int> range = {0, INT_MAX};
+        return new Node(NodeType::REPEAT, range, new_node);
+    }
+    if (match_and_consume("{")) {
+        int num;
+        std::string num_str = parse_until_char_or_end('}');
+
+        if (num_str.empty())
+            report("Expected number");
+        if (!match_and_consume("}"))
+            report("Expected '}'");
+        try {
+            num = std::stoi(num_str);
+        }
+        catch (const std::invalid_argument& e) {
+            report("A number inside '{}' was expected");
+        }
+        catch (const std::out_of_range& e) {
+            report("The number inside '{}' is out of range");
+        } 
+        std::vector<int> range = {num, num};
+        return new Node(NodeType::REPEAT, range, new_node);
+    }
+    return new_node;
 }
 
 Node* Parser::parse_concat() {
-    Node* node = parse_repeat();
-    while (node != nullptr) {
-        node = parse_repeat();
+    Node* new_node = parse_repeat();
+
+    if (new_node == nullptr)
+        return nullptr;
+    std::vector<Node*> childrens;
+
+    while (new_node != nullptr) {
+        childrens.push_back(new_node);
+        new_node = parse_repeat();
     }
-    return nullptr;
+    return new Node(childrens, NodeType::CONCAT);
 }
 
 Node* Parser::parse_or() {
     Node* first = parse_concat();
 
-    while (match("|")) {
-        parse_concat();
+    if (first == nullptr) 
+        return nullptr;
+    std::vector<Node*> childrens;
+    childrens.push_back(first);
+
+    while (match_and_consume("|")) {
+        if (position == cregex.length())
+            report("Expected expression to the right of '|'");
+        Node* next = parse_concat();
+        
+        if (next != nullptr)
+            childrens.push_back(next);
     }
-    return first;
-    // Return
+    return new Node(NodeType::OR, childrens);
 }
 
 Node* Parser::parse_expr() {
