@@ -1,6 +1,6 @@
 #include "ast.hpp"
 
-bool Parser::check_and_print_error(Node* root) {
+bool Parser::check_and_print_error() {
     if (is_error) {
         std::cerr << err_msg << std::endl;
         std::cerr << "Parser error: Compilation failed" << std::endl;
@@ -19,25 +19,6 @@ void Parser::report(std::string_view err_msg) {
         is_error = true;
         this->err_msg = err_msg;
     }
-}
-
-Node* Parser::parse_group_ref() {
-    std::string group_name;
-
-    if (!match_and_consume("<")) 
-        return nullptr;
-    group_name = parse_until_char_or_end('>');
-
-    if (group_name.empty()) {
-        report("Expected a group name for the reference inside '<>'");
-        return nullptr;
-    }
-    if (!match_and_consume(">")) {
-       report("Expected '>'");
-       return nullptr;
-    }
-
-    return new Node(NodeType::GROUP_REFERENCE, group_name);
 }
 
 Node* Parser::parse_symbol() {
@@ -100,7 +81,7 @@ Node* Parser::parse_groupped_expr() {
 
     if (!match_and_consume(")")) {
         report("Expected )");
-        return nullptr;
+        return new_node;
     }
     return new_node;
 }
@@ -140,10 +121,6 @@ Node* Parser::parse_atom() {
         return new_node;
     new_node = parse_symbol();
 
-    if (new_node != nullptr)
-        return new_node;
-    new_node = parse_group_ref();
-    
     if (new_node != nullptr)
         return new_node;
     return nullptr;
@@ -264,12 +241,37 @@ Node* Parser::parse_expr() {
     return root;
 }
 
-std::vector<std::pair<std::string, Node*>> collect_groups() {
-    
+void Ast::collect_groups(std::vector<std::pair<std::string, Node*>>& groups, Node* node) {
+    if (node == nullptr)
+        return;
+    if (node->type == NodeType::GROUP) {
+        std::string group_name = std::get<std::string>(node->data);
+        
+        if (!node->childrens.empty())
+            groups.push_back(std::make_pair(group_name, node->childrens.front()));
+        else 
+            groups.push_back(std::make_pair(group_name, nullptr));
+    }
+    for (Node* children: node->childrens)
+       collect_groups(groups, children); 
 }
 
-void Ast::ast_prepare() {
-    if (root == nullptr)
-        return;
-    std::vector<std::pair<std::string, Node*>> groups = collect_groups();
+bool Ast::prepare() {
+    if (root == nullptr) {
+        return true;
+    }
+    std::vector<std::pair<std::string, Node*>> groups;
+    collect_groups(groups, root);
+    
+    // checking if all group names are unique
+    std::set<std::string> unique_strings;
+    
+    for (const auto& pair : groups) {
+        if (!unique_strings.insert(pair.first).second) {
+            std::cerr << "Duplicate names were found for the groups" << std::endl; 
+            std::cerr << "Compilation failed" << std::endl;
+            return false;
+        }
+    }
+    return true;
 }

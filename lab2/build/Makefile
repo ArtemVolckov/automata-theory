@@ -177,6 +177,30 @@ main.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/main.cpp.s
 .PHONY : main.cpp.s
 
+nfa_dfa/nfa_dfa.o: nfa_dfa/nfa_dfa.cpp.o
+.PHONY : nfa_dfa/nfa_dfa.o
+
+# target to build an object file
+nfa_dfa/nfa_dfa.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/nfa_dfa/nfa_dfa.cpp.o
+.PHONY : nfa_dfa/nfa_dfa.cpp.o
+
+nfa_dfa/nfa_dfa.i: nfa_dfa/nfa_dfa.cpp.i
+.PHONY : nfa_dfa/nfa_dfa.i
+
+# target to preprocess a source file
+nfa_dfa/nfa_dfa.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/nfa_dfa/nfa_dfa.cpp.i
+.PHONY : nfa_dfa/nfa_dfa.cpp.i
+
+nfa_dfa/nfa_dfa.s: nfa_dfa/nfa_dfa.cpp.s
+.PHONY : nfa_dfa/nfa_dfa.s
+
+# target to generate assembly for a file
+nfa_dfa/nfa_dfa.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/nfa_dfa/nfa_dfa.cpp.s
+.PHONY : nfa_dfa/nfa_dfa.cpp.s
+
 regex/regex.o: regex/regex.cpp.o
 .PHONY : regex/regex.o
 
@@ -216,6 +240,9 @@ help:
 	@echo "... main.o"
 	@echo "... main.i"
 	@echo "... main.s"
+	@echo "... nfa_dfa/nfa_dfa.o"
+	@echo "... nfa_dfa/nfa_dfa.i"
+	@echo "... nfa_dfa/nfa_dfa.s"
 	@echo "... regex/regex.o"
 	@echo "... regex/regex.i"
 	@echo "... regex/regex.s"

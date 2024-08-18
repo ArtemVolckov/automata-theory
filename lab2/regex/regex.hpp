@@ -6,7 +6,6 @@
 #define REGCOMP_SUCCESS 0
 
 class Regex {
-    private:
     public:
         int compile(std::string_view cregex);
 };

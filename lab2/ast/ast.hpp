@@ -1,7 +1,9 @@
 #pragma once
+
 #include <iostream>
 #include <cstdlib>
 #include <vector>
+#include <set>
 #include <variant>
 #include <utility>
 #include <string>
@@ -13,7 +15,6 @@ enum class NodeType {
     CONCAT,
     REPEAT,
     GROUP,
-    GROUP_REFERENCE,
     SYMBOL
 };
 
@@ -22,12 +23,6 @@ typedef struct Node {
     std::variant<std::vector<int>, std::string, char> data;
     std::vector<Node*> childrens;
     
-    // GROUP_REFERENCE
-    Node(NodeType type, std::string name) {
-        this->type = type;
-        data = name;
-    }
-
     // SYMBOL
     Node(NodeType type, char symbol) {
         this->type = type;
@@ -69,16 +64,20 @@ typedef struct Node {
 } Node;
 
 typedef struct Ast {
-    Node* root = nullptr;
+    Node* root;
+
+    Ast(Node* root) {
+        this->root = root;
+    }
 
     ~Ast() {
         delete root;
     }
     
     // Simplifying the tree and checking errors with groups
-    void ast_prepare();
+    bool prepare();
     // Tree traversal with the search for groups and replacing them with their children
-    std::vector<std::pair<std::string, Node*>> collect_groups();
+    void collect_groups(std::vector<std::pair<std::string, Node*>>& groups, Node* node);
 } Ast;
 
 class Parser {
@@ -124,12 +123,11 @@ class Parser {
         Node* parse_named_group();
         Node* parse_groupped_expr();
         Node* parse_symbol();
-        Node* parse_group_ref();
 
         void report(std::string_view err_msg);
 
     public:
         Parser(std::string_view cregex) : cregex(cregex) {}
         Node* parse_expr();
-        bool check_and_print_error(Node* root);
+        bool check_and_print_error();
 };

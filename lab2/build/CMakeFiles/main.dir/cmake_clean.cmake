@@ -3,6 +3,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/main.dir/ast/ast.cpp.o.d"
   "CMakeFiles/main.dir/main.cpp.o"
   "CMakeFiles/main.dir/main.cpp.o.d"
+  "CMakeFiles/main.dir/nfa_dfa/nfa_dfa.cpp.o"
+  "CMakeFiles/main.dir/nfa_dfa/nfa_dfa.cpp.o.d"
   "CMakeFiles/main.dir/regex/regex.cpp.o"
   "CMakeFiles/main.dir/regex/regex.cpp.o.d"
   "main"

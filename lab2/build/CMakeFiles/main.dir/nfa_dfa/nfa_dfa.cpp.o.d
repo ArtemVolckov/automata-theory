@@ -1,5 +1,6 @@
-CMakeFiles/main.dir/ast/ast.cpp.o: /home/artem/ta/lab2/ast/ast.cpp \
- /usr/include/stdc-predef.h /home/artem/ta/lab2/ast/ast.hpp \
+CMakeFiles/main.dir/nfa_dfa/nfa_dfa.cpp.o: \
+ /home/artem/ta/lab2/nfa_dfa/nfa_dfa.cpp /usr/include/stdc-predef.h \
+ /home/artem/ta/lab2/nfa_dfa/nfa_dfa.hpp /home/artem/ta/lab2/ast/ast.hpp \
  /usr/include/c++/13/iostream /usr/include/c++/13/bits/requires_hosted.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/os_defines.h \
