@@ -103,6 +103,10 @@ Node* Parser::parse_named_group() {
     }
     Node* new_node = parse_expr();
 
+    if (new_node == nullptr) {
+        report("Expected an expression inside the group");
+        return nullptr;
+    }
     if (!match_and_consume(")")) {
         report("Expected ')'");
         return nullptr;
@@ -175,6 +179,10 @@ Node* Parser::parse_repeat() {
                 report("The number inside '{}' is out of range");
                 return new_node;
             }
+            if (num == 0) {
+                report("The number of repetitions cannot be zero");
+                return new_node;
+            }
             if (num == INT_MAX) {
                 report("The number of repetitions cannot be infinite");
                 return new_node;
@@ -241,33 +249,30 @@ Node* Parser::parse_expr() {
     return root;
 }
 
-void Ast::collect_groups(std::vector<std::pair<std::string, Node*>>& groups, Node* node) {
+void Ast::collect_groups(std::vector<std::string>& groups, int& groups_count, Node* node) {
     if (node == nullptr)
         return;
     if (node->type == NodeType::GROUP) {
         std::string group_name = std::get<std::string>(node->data);
-        
-        if (!node->childrens.empty())
-            groups.push_back(std::make_pair(group_name, node->childrens.front()));
-        else 
-            groups.push_back(std::make_pair(group_name, nullptr));
+        groups.push_back(group_name);
+        groups_count++;
     }
     for (Node* children: node->childrens)
-       collect_groups(groups, children); 
+        collect_groups(groups, groups_count, children); 
 }
 
-bool Ast::prepare() {
+bool Ast::prepare(int& groups_count) {
     if (root == nullptr) {
         return true;
     }
-    std::vector<std::pair<std::string, Node*>> groups;
-    collect_groups(groups, root);
+    std::vector<std::string> groups;
+    collect_groups(groups, groups_count, root);
     
     // checking if all group names are unique
     std::set<std::string> unique_strings;
     
-    for (const auto& pair : groups) {
-        if (!unique_strings.insert(pair.first).second) {
+    for (const auto& group_name : groups) {
+        if (!unique_strings.insert(group_name).second) {
             std::cerr << "Duplicate names were found for the groups" << std::endl; 
             std::cerr << "Compilation failed" << std::endl;
             return false;

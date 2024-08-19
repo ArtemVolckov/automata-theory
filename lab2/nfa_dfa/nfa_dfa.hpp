@@ -5,49 +5,36 @@
 typedef struct Adjacency_list {
     std::variant<std::pair<char, int>, std::pair<std::string, int>> transition;
     Adjacency_list* next = nullptr;
+
+    Adjacency_list() {}
     
-    // SYMBOL 
+    // EPSILON | SYMBOL 
     Adjacency_list(char symbol, int state_num) {
         transition = std::make_pair(symbol, state_num);
     }
 } Adjacency_list;
 
-class Nfa {
-    private:
-        int state_count = 0;
-        std::vector<Adjacency_list*> transitions;
+typedef struct Nfa {
+    int state_count = 0;
+    std::vector<Adjacency_list*> transitions;
 
-        Nfa() {}
+    Nfa() {}
 
-        void make_nfa(Nfa& nfa, Node* node);
+    ~Nfa() {
+        Adjacency_list* transition_tmp;
 
-    public:
-        Nfa(Ast& ast) {
-            Nfa nfa;
-            make_nfa(nfa, ast.root);
-
-            if (nfa == nullptr) 
-                this->state_count = 0;
-            else {
-                this->state_count = nfa->state_count;
-                this->transitions = nfa->transitions;
-                nfa->transitions.clear();
-                delete nfa;
+        for (Adjacency_list* transition: transitions) {
+            while (transition != nullptr) {
+                transition_tmp = transition->next;
+                delete transition;
+                transition = transition_tmp;
             }
         }
+    }        
+} Nfa;
 
-        ~Nfa() {
-            Adjacency_list* transition_tmp;
-
-            for (Adjacency_list* transition: transitions) {
-                while (transition != nullptr) {
-                    transition_tmp = transition->next;
-                    delete transition;
-                    transition = transition_tmp;
-                }
-            }
-        }
-};
+void print_nfa(Nfa* nfa);
+void nnfa_init(std::vector<Nfa*>& nnfa, Node* ast_node);
 
 class Dfa {
     int state_count = 0;

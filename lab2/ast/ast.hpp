@@ -33,9 +33,7 @@ typedef struct Node {
     Node(NodeType type, std::string name, Node* new_node) {
         this->type = type;
         data = name;
-
-        if (new_node != nullptr)
-            childrens.push_back(new_node);
+        childrens.push_back(new_node);
     }
 
     // REPEAT
@@ -75,9 +73,9 @@ typedef struct Ast {
     }
     
     // Simplifying the tree and checking errors with groups
-    bool prepare();
+    bool prepare(int& groups_count);
     // Tree traversal with the search for groups and replacing them with their children
-    void collect_groups(std::vector<std::pair<std::string, Node*>>& groups, Node* node);
+    void collect_groups(std::vector<std::string>& groups, int& groups_count, Node* node);
 } Ast;
 
 class Parser {
