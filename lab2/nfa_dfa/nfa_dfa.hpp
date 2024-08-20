@@ -1,5 +1,9 @@
 #pragma once
 
+#include <algorithm>
+#include <queue>
+#include <map>
+
 #include "ast.hpp"
 
 typedef struct Adjacency_list {
@@ -19,10 +23,17 @@ typedef struct Adjacency_list {
 } Adjacency_list;
 
 typedef struct Nfa {
+    std::string name;
     int state_count = 0;
     std::vector<Adjacency_list*> transitions;
 
+    // for the main nfa
     Nfa() {}
+
+    // for the group nfa
+    Nfa(std::string name) {
+        this->name = name; 
+    }
 
     ~Nfa() {
         Adjacency_list* transition_tmp;
@@ -37,12 +48,35 @@ typedef struct Nfa {
     }        
 } Nfa;
 
-void print_nnfa(std::vector<Nfa*>& nnfa, std::vector<std::string>& group_names);
-void nnfa_init(std::vector<Nfa*>& nnfa, Node* ast_node, int nnfa_num, std::vector<std::string>& group_names);
+void print_nnfa(const std::vector<Nfa*>& nnfa);
+void nnfa_init(std::vector<Nfa*>& nnfa, Node* ast_node, int nnfa_num);
 
 typedef struct Dfa {
+    std::string name;
     int state_count = 0;
     std::vector<Adjacency_list*> transitions;
+
+    // for the main dfa 
+    Dfa() {}
+
+    // for the group dfa
+    Dfa(std::string name) {
+        this->name = name;
+    }
+
+    ~Dfa() {
+        Adjacency_list* transition_tmp;
+
+        for (Adjacency_list* transition: transitions) {
+            while (transition != nullptr) {
+                transition_tmp = transition->next;
+                delete transition;
+                transition = transition_tmp;
+            }
+        }
+    }
 } Dfa;
 
-Dfa nfa_to_dfa(Nfa& nfa);
+void print_ndfa(const std::vector<Dfa*>& ndfa);
+std::set<int> epsilon_closure(const Nfa& nfa, int state);
+std::vector<Dfa*> nfa_to_dfa(std::vector<Nfa*>& nnfa);

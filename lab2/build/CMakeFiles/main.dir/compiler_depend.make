@@ -6,10 +6,8 @@ CMakeFiles/main.dir/ast/ast.cpp.o: /home/artem/ta/lab2/ast/ast.cpp \
   /usr/include/alloca.h \
   /usr/include/asm-generic/errno-base.h \
   /usr/include/asm-generic/errno.h \
-  /usr/include/c++/13/algorithm \
   /usr/include/c++/13/backward/binders.h \
   /usr/include/c++/13/bit \
-  /usr/include/c++/13/bits/algorithmfwd.h \
   /usr/include/c++/13/bits/alloc_traits.h \
   /usr/include/c++/13/bits/allocator.h \
   /usr/include/c++/13/bits/basic_ios.h \
@@ -53,20 +51,16 @@ CMakeFiles/main.dir/ast/ast.cpp.o: /home/artem/ta/lab2/ast/ast.cpp \
   /usr/include/c++/13/bits/predefined_ops.h \
   /usr/include/c++/13/bits/ptr_traits.h \
   /usr/include/c++/13/bits/range_access.h \
-  /usr/include/c++/13/bits/ranges_algo.h \
-  /usr/include/c++/13/bits/ranges_algobase.h \
   /usr/include/c++/13/bits/ranges_base.h \
   /usr/include/c++/13/bits/ranges_cmp.h \
   /usr/include/c++/13/bits/ranges_util.h \
   /usr/include/c++/13/bits/refwrap.h \
   /usr/include/c++/13/bits/requires_hosted.h \
   /usr/include/c++/13/bits/std_abs.h \
-  /usr/include/c++/13/bits/stl_algo.h \
   /usr/include/c++/13/bits/stl_algobase.h \
   /usr/include/c++/13/bits/stl_bvector.h \
   /usr/include/c++/13/bits/stl_construct.h \
   /usr/include/c++/13/bits/stl_function.h \
-  /usr/include/c++/13/bits/stl_heap.h \
   /usr/include/c++/13/bits/stl_iterator.h \
   /usr/include/c++/13/bits/stl_iterator_base_funcs.h \
   /usr/include/c++/13/bits/stl_iterator_base_types.h \
@@ -74,7 +68,6 @@ CMakeFiles/main.dir/ast/ast.cpp.o: /home/artem/ta/lab2/ast/ast.cpp \
   /usr/include/c++/13/bits/stl_pair.h \
   /usr/include/c++/13/bits/stl_relops.h \
   /usr/include/c++/13/bits/stl_set.h \
-  /usr/include/c++/13/bits/stl_tempbuf.h \
   /usr/include/c++/13/bits/stl_tree.h \
   /usr/include/c++/13/bits/stl_uninitialized.h \
   /usr/include/c++/13/bits/stl_vector.h \
@@ -82,7 +75,6 @@ CMakeFiles/main.dir/ast/ast.cpp.o: /home/artem/ta/lab2/ast/ast.cpp \
   /usr/include/c++/13/bits/streambuf_iterator.h \
   /usr/include/c++/13/bits/string_view.tcc \
   /usr/include/c++/13/bits/stringfwd.h \
-  /usr/include/c++/13/bits/uniform_int_dist.h \
   /usr/include/c++/13/bits/uses_allocator.h \
   /usr/include/c++/13/bits/uses_allocator_args.h \
   /usr/include/c++/13/bits/utility.h \
@@ -115,8 +107,6 @@ CMakeFiles/main.dir/ast/ast.cpp.o: /home/artem/ta/lab2/ast/ast.cpp \
   /usr/include/c++/13/new \
   /usr/include/c++/13/numbers \
   /usr/include/c++/13/ostream \
-  /usr/include/c++/13/pstl/execution_defs.h \
-  /usr/include/c++/13/pstl/glue_algorithm_defs.h \
   /usr/include/c++/13/pstl/pstl_config.h \
   /usr/include/c++/13/set \
   /usr/include/c++/13/stdexcept \
@@ -452,6 +442,7 @@ CMakeFiles/main.dir/nfa_dfa/nfa_dfa.cpp.o: /home/artem/ta/lab2/nfa_dfa/nfa_dfa.c
   /usr/include/c++/13/bits/cpp_type_traits.h \
   /usr/include/c++/13/bits/cxxabi_forced.h \
   /usr/include/c++/13/bits/cxxabi_init_exception.h \
+  /usr/include/c++/13/bits/deque.tcc \
   /usr/include/c++/13/bits/enable_special_members.h \
   /usr/include/c++/13/bits/erase_if.h \
   /usr/include/c++/13/bits/exception.h \
@@ -495,13 +486,17 @@ CMakeFiles/main.dir/nfa_dfa/nfa_dfa.cpp.o: /home/artem/ta/lab2/nfa_dfa/nfa_dfa.c
   /usr/include/c++/13/bits/stl_algobase.h \
   /usr/include/c++/13/bits/stl_bvector.h \
   /usr/include/c++/13/bits/stl_construct.h \
+  /usr/include/c++/13/bits/stl_deque.h \
   /usr/include/c++/13/bits/stl_function.h \
   /usr/include/c++/13/bits/stl_heap.h \
   /usr/include/c++/13/bits/stl_iterator.h \
   /usr/include/c++/13/bits/stl_iterator_base_funcs.h \
   /usr/include/c++/13/bits/stl_iterator_base_types.h \
+  /usr/include/c++/13/bits/stl_map.h \
+  /usr/include/c++/13/bits/stl_multimap.h \
   /usr/include/c++/13/bits/stl_multiset.h \
   /usr/include/c++/13/bits/stl_pair.h \
+  /usr/include/c++/13/bits/stl_queue.h \
   /usr/include/c++/13/bits/stl_relops.h \
   /usr/include/c++/13/bits/stl_set.h \
   /usr/include/c++/13/bits/stl_tempbuf.h \
@@ -530,6 +525,7 @@ CMakeFiles/main.dir/nfa_dfa/nfa_dfa.cpp.o: /home/artem/ta/lab2/nfa_dfa/nfa_dfa.c
   /usr/include/c++/13/cwctype \
   /usr/include/c++/13/debug/assertions.h \
   /usr/include/c++/13/debug/debug.h \
+  /usr/include/c++/13/deque \
   /usr/include/c++/13/exception \
   /usr/include/c++/13/ext/aligned_buffer.h \
   /usr/include/c++/13/ext/alloc_traits.h \
@@ -542,12 +538,14 @@ CMakeFiles/main.dir/nfa_dfa/nfa_dfa.cpp.o: /home/artem/ta/lab2/nfa_dfa/nfa_dfa.c
   /usr/include/c++/13/iosfwd \
   /usr/include/c++/13/iostream \
   /usr/include/c++/13/istream \
+  /usr/include/c++/13/map \
   /usr/include/c++/13/new \
   /usr/include/c++/13/numbers \
   /usr/include/c++/13/ostream \
   /usr/include/c++/13/pstl/execution_defs.h \
   /usr/include/c++/13/pstl/glue_algorithm_defs.h \
   /usr/include/c++/13/pstl/pstl_config.h \
+  /usr/include/c++/13/queue \
   /usr/include/c++/13/set \
   /usr/include/c++/13/stdexcept \
   /usr/include/c++/13/streambuf \
@@ -687,6 +685,7 @@ CMakeFiles/main.dir/regex/regex.cpp.o: /home/artem/ta/lab2/regex/regex.cpp \
   /usr/include/c++/13/bits/cpp_type_traits.h \
   /usr/include/c++/13/bits/cxxabi_forced.h \
   /usr/include/c++/13/bits/cxxabi_init_exception.h \
+  /usr/include/c++/13/bits/deque.tcc \
   /usr/include/c++/13/bits/enable_special_members.h \
   /usr/include/c++/13/bits/erase_if.h \
   /usr/include/c++/13/bits/exception.h \
@@ -730,13 +729,17 @@ CMakeFiles/main.dir/regex/regex.cpp.o: /home/artem/ta/lab2/regex/regex.cpp \
   /usr/include/c++/13/bits/stl_algobase.h \
   /usr/include/c++/13/bits/stl_bvector.h \
   /usr/include/c++/13/bits/stl_construct.h \
+  /usr/include/c++/13/bits/stl_deque.h \
   /usr/include/c++/13/bits/stl_function.h \
   /usr/include/c++/13/bits/stl_heap.h \
   /usr/include/c++/13/bits/stl_iterator.h \
   /usr/include/c++/13/bits/stl_iterator_base_funcs.h \
   /usr/include/c++/13/bits/stl_iterator_base_types.h \
+  /usr/include/c++/13/bits/stl_map.h \
+  /usr/include/c++/13/bits/stl_multimap.h \
   /usr/include/c++/13/bits/stl_multiset.h \
   /usr/include/c++/13/bits/stl_pair.h \
+  /usr/include/c++/13/bits/stl_queue.h \
   /usr/include/c++/13/bits/stl_relops.h \
   /usr/include/c++/13/bits/stl_set.h \
   /usr/include/c++/13/bits/stl_tempbuf.h \
@@ -765,6 +768,7 @@ CMakeFiles/main.dir/regex/regex.cpp.o: /home/artem/ta/lab2/regex/regex.cpp \
   /usr/include/c++/13/cwctype \
   /usr/include/c++/13/debug/assertions.h \
   /usr/include/c++/13/debug/debug.h \
+  /usr/include/c++/13/deque \
   /usr/include/c++/13/exception \
   /usr/include/c++/13/ext/aligned_buffer.h \
   /usr/include/c++/13/ext/alloc_traits.h \
@@ -777,12 +781,14 @@ CMakeFiles/main.dir/regex/regex.cpp.o: /home/artem/ta/lab2/regex/regex.cpp \
   /usr/include/c++/13/iosfwd \
   /usr/include/c++/13/iostream \
   /usr/include/c++/13/istream \
+  /usr/include/c++/13/map \
   /usr/include/c++/13/new \
   /usr/include/c++/13/numbers \
   /usr/include/c++/13/ostream \
   /usr/include/c++/13/pstl/execution_defs.h \
   /usr/include/c++/13/pstl/glue_algorithm_defs.h \
   /usr/include/c++/13/pstl/pstl_config.h \
+  /usr/include/c++/13/queue \
   /usr/include/c++/13/set \
   /usr/include/c++/13/stdexcept \
   /usr/include/c++/13/streambuf \
@@ -900,6 +906,20 @@ CMakeFiles/main.dir/regex/regex.cpp.o: /home/artem/ta/lab2/regex/regex.cpp \
   /usr/lib/gcc/x86_64-linux-gnu/13/include/syslimits.h
 
 
+/usr/include/c++/13/pstl/glue_algorithm_defs.h:
+
+/usr/include/c++/13/deque:
+
+/usr/include/c++/13/bits/stl_heap.h:
+
+/usr/include/c++/13/bits/stl_deque.h:
+
+/usr/include/c++/13/bits/ranges_algobase.h:
+
+/usr/include/c++/13/bits/algorithmfwd.h:
+
+/usr/include/c++/13/algorithm:
+
 /home/artem/ta/lab2/nfa_dfa/nfa_dfa.cpp:
 
 /home/artem/ta/lab2/regex/regex.hpp:
@@ -945,6 +965,10 @@ CMakeFiles/main.dir/regex/regex.cpp.o: /home/artem/ta/lab2/regex/regex.cpp \
 /usr/include/x86_64-linux-gnu/bits/types/time_t.h:
 
 /usr/include/x86_64-linux-gnu/bits/types/struct_tm.h:
+
+/usr/include/c++/13/bits/stl_tempbuf.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/struct___jmp_buf_tag.h:
 
 /usr/include/x86_64-linux-gnu/bits/wctype-wchar.h:
 
@@ -994,9 +1018,13 @@ CMakeFiles/main.dir/regex/regex.cpp.o: /home/artem/ta/lab2/regex/regex.cpp \
 
 /usr/include/x86_64-linux-gnu/bits/local_lim.h:
 
+/usr/include/c++/13/bits/stl_queue.h:
+
 /usr/include/x86_64-linux-gnu/bits/types/wint_t.h:
 
 /usr/include/x86_64-linux-gnu/bits/floatn-common.h:
+
+/usr/include/c++/13/bits/deque.tcc:
 
 /usr/include/x86_64-linux-gnu/gnu/stubs.h:
 
@@ -1022,27 +1050,13 @@ CMakeFiles/main.dir/regex/regex.cpp.o: /home/artem/ta/lab2/regex/regex.cpp \
 
 /usr/include/pthread.h:
 
-/usr/include/x86_64-linux-gnu/bits/posix2_lim.h:
+/usr/include/c++/13/bits/stl_construct.h:
 
-/usr/include/linux/limits.h:
-
-/usr/include/x86_64-linux-gnu/bits/pthread_stack_min-dynamic.h:
-
-/usr/include/linux/errno.h:
-
-/usr/include/limits.h:
-
-/usr/include/features.h:
-
-/usr/include/ctype.h:
-
-/usr/include/c++/13/vector:
+/usr/include/c++/13/map:
 
 /usr/include/x86_64-linux-gnu/bits/types/__fpos_t.h:
 
 /usr/include/c++/13/bits/refwrap.h:
-
-/usr/include/c++/13/bits/ranges_algobase.h:
 
 /usr/include/c++/13/debug/debug.h:
 
@@ -1054,13 +1068,13 @@ CMakeFiles/main.dir/regex/regex.cpp.o: /home/artem/ta/lab2/regex/regex.cpp \
 
 /usr/include/c++/13/bits/ostream_insert.h:
 
+/usr/include/c++/13/bits/stl_algobase.h:
+
 /usr/include/c++/13/bits/node_handle.h:
 
 /usr/include/c++/13/ios:
 
 /usr/include/c++/13/bits/parse_numbers.h:
-
-/usr/include/c++/13/bits/stl_heap.h:
 
 /usr/include/time.h:
 
@@ -1069,6 +1083,14 @@ CMakeFiles/main.dir/regex/regex.cpp.o: /home/artem/ta/lab2/regex/regex.cpp \
 /usr/include/c++/13/bits/erase_if.h:
 
 /usr/include/c++/13/climits:
+
+/usr/include/c++/13/bits/stl_algo.h:
+
+/usr/include/x86_64-linux-gnu/bits/types/struct_timespec.h:
+
+/usr/include/c++/13/cstddef:
+
+/usr/include/c++/13/vector:
 
 /usr/include/wchar.h:
 
@@ -1080,7 +1102,13 @@ CMakeFiles/main.dir/regex/regex.cpp.o: /home/artem/ta/lab2/regex/regex.cpp \
 
 /usr/include/c++/13/bits/locale_classes.tcc:
 
+/usr/include/c++/13/bits/stl_bvector.h:
+
+/usr/include/c++/13/bits/allocator.h:
+
 /usr/include/c++/13/bits/locale_classes.h:
+
+/usr/include/ctype.h:
 
 /usr/include/c++/13/bits/iterator_concepts.h:
 
@@ -1092,6 +1120,26 @@ CMakeFiles/main.dir/regex/regex.cpp.o: /home/artem/ta/lab2/regex/regex.cpp \
 
 /usr/include/c++/13/bits/char_traits.h:
 
+/usr/include/x86_64-linux-gnu/c++/13/bits/os_defines.h:
+
+/usr/include/x86_64-linux-gnu/c++/13/bits/c++locale.h:
+
+/usr/include/c++/13/bits/ptr_traits.h:
+
+/usr/include/alloca.h:
+
+/usr/include/c++/13/pstl/execution_defs.h:
+
+/usr/include/x86_64-linux-gnu/c++/13/bits/gthr.h:
+
+/usr/include/c++/13/bits/basic_ios.tcc:
+
+/usr/include/c++/13/bits/nested_exception.h:
+
+/usr/include/x86_64-linux-gnu/bits/time64.h:
+
+/usr/include/c++/13/bits/basic_ios.h:
+
 /usr/include/x86_64-linux-gnu/c++/13/bits/c++config.h:
 
 /usr/include/c++/13/bits/ios_base.h:
@@ -1102,27 +1150,13 @@ CMakeFiles/main.dir/regex/regex.cpp.o: /home/artem/ta/lab2/regex/regex.cpp \
 
 /usr/include/c++/13/bits/string_view.tcc:
 
+/usr/include/features.h:
+
 /usr/include/c++/13/backward/binders.h:
 
-/home/artem/ta/lab2/nfa_dfa/nfa_dfa.hpp:
+/usr/include/c++/13/bits/uniform_int_dist.h:
 
-/usr/include/errno.h:
-
-/usr/include/c++/13/bits/functional_hash.h:
-
-/usr/include/c++/13/bits/nested_exception.h:
-
-/usr/include/x86_64-linux-gnu/bits/time64.h:
-
-/usr/include/c++/13/bits/basic_ios.h:
-
-/usr/include/x86_64-linux-gnu/c++/13/bits/os_defines.h:
-
-/usr/include/x86_64-linux-gnu/c++/13/bits/c++locale.h:
-
-/usr/include/c++/13/bits/ptr_traits.h:
-
-/usr/include/alloca.h:
+/usr/include/c++/13/bits/stringfwd.h:
 
 /usr/include/c++/13/cwctype:
 
@@ -1133,10 +1167,6 @@ CMakeFiles/main.dir/regex/regex.cpp.o: /home/artem/ta/lab2/regex/regex.cpp \
 /usr/include/asm-generic/errno-base.h:
 
 /usr/include/c++/13/bits/hash_bytes.h:
-
-/usr/include/features-time64.h:
-
-/usr/include/c++/13/string_view:
 
 /usr/include/c++/13/bits/basic_string.tcc:
 
@@ -1160,19 +1190,7 @@ CMakeFiles/main.dir/regex/regex.cpp.o: /home/artem/ta/lab2/regex/regex.cpp \
 
 /usr/include/c++/13/bits/locale_facets.h:
 
-/usr/include/c++/13/bits/ranges_base.h:
-
-/usr/include/c++/13/istream:
-
-/usr/include/x86_64-linux-gnu/bits/endianness.h:
-
-/usr/include/c++/13/bits/basic_string.h:
-
 /usr/include/c++/13/bits/move.h:
-
-/usr/include/c++/13/bits/utility.h:
-
-/usr/include/c++/13/bits/stl_function.h:
 
 /usr/include/x86_64-linux-gnu/bits/types.h:
 
@@ -1190,7 +1208,7 @@ CMakeFiles/main.dir/regex/regex.cpp.o: /home/artem/ta/lab2/regex/regex.cpp \
 
 /usr/include/c++/13/bits/exception.h:
 
-/usr/include/c++/13/algorithm:
+/usr/include/c++/13/bits/stl_multimap.h:
 
 /usr/include/c++/13/bits/istream.tcc:
 
@@ -1208,21 +1226,17 @@ CMakeFiles/main.dir/regex/regex.cpp.o: /home/artem/ta/lab2/regex/regex.cpp \
 
 /usr/include/c++/13/ext/alloc_traits.h:
 
-/usr/include/c++/13/bits/algorithmfwd.h:
+/usr/include/c++/13/bits/ranges_base.h:
 
-/usr/include/x86_64-linux-gnu/bits/types/struct_timespec.h:
+/usr/include/c++/13/istream:
 
-/usr/include/c++/13/cstddef:
+/usr/include/c++/13/string_view:
 
-/usr/include/c++/13/bits/stl_algo.h:
+/usr/include/features-time64.h:
 
-/usr/include/c++/13/bits/stl_algobase.h:
+/usr/include/x86_64-linux-gnu/bits/endianness.h:
 
-/usr/include/c++/13/bits/allocator.h:
-
-/usr/include/c++/13/bits/stl_bvector.h:
-
-/usr/include/c++/13/bits/stl_construct.h:
+/usr/include/c++/13/bits/basic_string.h:
 
 /usr/include/x86_64-linux-gnu/bits/libc-header-start.h:
 
@@ -1254,29 +1268,17 @@ CMakeFiles/main.dir/regex/regex.cpp.o: /home/artem/ta/lab2/regex/regex.cpp \
 
 /usr/include/c++/13/bits/stl_set.h:
 
-/usr/include/x86_64-linux-gnu/bits/types/struct___jmp_buf_tag.h:
-
-/usr/include/c++/13/bits/stl_tempbuf.h:
-
-/usr/include/c++/13/bits/stl_vector.h:
+/usr/include/c++/13/bits/stl_map.h:
 
 /usr/include/c++/13/bits/stl_uninitialized.h:
 
-/usr/include/endian.h:
+/usr/include/c++/13/bits/stl_vector.h:
 
-/usr/include/c++/13/bits/max_size_type.h:
-
-/usr/include/c++/13/bits/streambuf.tcc:
-
-/usr/include/c++/13/bits/stringfwd.h:
-
-/usr/include/c++/13/bits/uniform_int_dist.h:
+/usr/include/c++/13/bits/std_abs.h:
 
 /usr/include/c++/13/bits/postypes.h:
 
 /usr/include/c++/13/bits/stl_multiset.h:
-
-/usr/include/c++/13/bits/std_abs.h:
 
 /usr/include/c++/13/bits/uses_allocator.h:
 
@@ -1292,9 +1294,9 @@ CMakeFiles/main.dir/regex/regex.cpp.o: /home/artem/ta/lab2/regex/regex.cpp \
 
 /usr/include/c++/13/bits/uses_allocator_args.h:
 
-/usr/include/c++/13/variant:
+/usr/include/c++/13/bits/stl_function.h:
 
-/usr/include/c++/13/bits/vector.tcc:
+/usr/include/c++/13/bits/utility.h:
 
 /usr/include/c++/13/clocale:
 
@@ -1326,11 +1328,23 @@ CMakeFiles/main.dir/regex/regex.cpp.o: /home/artem/ta/lab2/regex/regex.cpp \
 
 /usr/include/c++/13/tuple:
 
+/home/artem/ta/lab2/nfa_dfa/nfa_dfa.hpp:
+
+/usr/include/c++/13/bits/functional_hash.h:
+
+/usr/include/errno.h:
+
 /usr/include/x86_64-linux-gnu/bits/pthreadtypes-arch.h:
 
 /usr/include/locale.h:
 
 /usr/include/c++/13/ext/aligned_buffer.h:
+
+/usr/include/c++/13/queue:
+
+/usr/include/x86_64-linux-gnu/bits/posix2_lim.h:
+
+/usr/include/linux/limits.h:
 
 /usr/include/x86_64-linux-gnu/bits/posix1_lim.h:
 
@@ -1350,14 +1364,6 @@ CMakeFiles/main.dir/regex/regex.cpp.o: /home/artem/ta/lab2/regex/regex.cpp \
 
 /usr/include/c++/13/ostream:
 
-/usr/include/x86_64-linux-gnu/c++/13/bits/gthr.h:
-
-/usr/include/c++/13/bits/basic_ios.tcc:
-
-/usr/include/c++/13/pstl/execution_defs.h:
-
-/usr/include/c++/13/pstl/glue_algorithm_defs.h:
-
 /usr/include/x86_64-linux-gnu/bits/wordsize.h:
 
 /usr/include/c++/13/pstl/pstl_config.h:
@@ -1373,3 +1379,19 @@ CMakeFiles/main.dir/regex/regex.cpp.o: /home/artem/ta/lab2/regex/regex.cpp \
 /usr/include/c++/13/typeinfo:
 
 /usr/include/c++/13/utility:
+
+/usr/include/c++/13/bits/vector.tcc:
+
+/usr/include/c++/13/variant:
+
+/usr/include/c++/13/bits/max_size_type.h:
+
+/usr/include/c++/13/bits/streambuf.tcc:
+
+/usr/include/endian.h:
+
+/usr/include/limits.h:
+
+/usr/include/x86_64-linux-gnu/bits/pthread_stack_min-dynamic.h:
+
+/usr/include/linux/errno.h:

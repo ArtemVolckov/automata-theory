@@ -13,28 +13,23 @@ int Regex::compile(std::string_view cregex) {
     if (!ast.prepare(group_names))
         return REGCOMP_ERR;
 
-    group_names.clear();
     std::vector<Nfa*> nnfa;
     Nfa nfa;
     nnfa.push_back(&nfa);
-    nnfa_init(nnfa, ast.root, 0, group_names);
+    nnfa_init(nnfa, ast.root, 0);
+    std::cout << "Nfa count = " << nnfa.size() << std::endl;
 
-#if 0
-    if (group_names.size() != (nnfa.size() - 1)) {
-        std::cerr << "Redefining the group due to the use of repetitions: '{}', '...'" << std::endl;
-        std::cerr << "Compilation failed" << std::endl;
+    print_nnfa(nnfa);
 
-        for (int i = 1; i < nnfa.size(); ++i)
-            delete nnfa.at(i);
+    std::vector<Dfa*> ndfa = nfa_to_dfa(nnfa);
+    std::cout << "Dfa count = " << ndfa.size() << std::endl;
 
-        return REGCOMP_ERR;
-    }
-#endif 
-
-    print_nnfa(nnfa, group_names);
+    print_ndfa(ndfa);
 
     for (int i = 1; i < nnfa.size(); ++i)
         delete nnfa.at(i);
+    for (int i = 0; i < ndfa.size(); ++i)
+        delete ndfa.at(i);
 
     return REGCOMP_SUCCESS; 
 }
