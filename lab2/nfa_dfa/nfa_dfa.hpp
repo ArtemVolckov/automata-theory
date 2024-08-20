@@ -12,6 +12,10 @@ typedef struct Adjacency_list {
     Adjacency_list(char symbol, int state_num) {
         transition = std::make_pair(symbol, state_num);
     }
+    // GROUP
+    Adjacency_list(std::string group_name, int state_num) {
+        transition = std::make_pair(group_name, state_num);
+    }
 } Adjacency_list;
 
 typedef struct Nfa {
@@ -33,10 +37,12 @@ typedef struct Nfa {
     }        
 } Nfa;
 
-void print_nfa(Nfa* nfa);
-void nnfa_init(std::vector<Nfa*>& nnfa, Node* ast_node);
+void print_nnfa(std::vector<Nfa*>& nnfa, std::vector<std::string>& group_names);
+void nnfa_init(std::vector<Nfa*>& nnfa, Node* ast_node, int nnfa_num, std::vector<std::string>& group_names);
 
-class Dfa {
+typedef struct Dfa {
     int state_count = 0;
     std::vector<Adjacency_list*> transitions;
-};
+} Dfa;
+
+Dfa nfa_to_dfa(Nfa& nfa);

@@ -1,12 +1,12 @@
 #include "nfa_dfa.hpp"
 
-void nnfa_init(std::vector<Nfa*>& nnfa, Node* ast_node, int nnfa_num, std::vector<std::string>& group_names) {
+void nnfa_init(std::vector<Nfa*>& nnfa, Node* ast_node) {
     if (ast_node == nullptr)
         return;
 
     // SYMBOL 
     if (ast_node->type == NodeType::SYMBOL) {
-        Nfa* main_nfa = nnfa.at(nnfa_num);
+        Nfa* main_nfa = nnfa.at(0);
         main_nfa->state_count++;
 
         // if the last operation was '...'
@@ -21,12 +21,12 @@ void nnfa_init(std::vector<Nfa*>& nnfa, Node* ast_node, int nnfa_num, std::vecto
     // CONCAT
     else if (ast_node->type == NodeType::CONCAT) {
         for (Node* children: ast_node->childrens) {
-            nnfa_init(nnfa, children, nnfa_num, group_names);
+            nnfa_init(nnfa, children);
         }
     }
     // OR
     else if (ast_node->type == NodeType::OR) {
-        Nfa* main_nfa = nnfa.at(nnfa_num);
+        Nfa* main_nfa = nnfa.at(0);
         std::vector<int> start_state_counts;
         std::vector<int> end_state_counts;
         std::vector<bool> is_start_transitions_end_states;
@@ -47,7 +47,7 @@ void nnfa_init(std::vector<Nfa*>& nnfa, Node* ast_node, int nnfa_num, std::vecto
         for (Node* children: ast_node->childrens) {
             main_nfa->state_count++;
             start_state_counts.push_back(main_nfa->state_count); 
-            nnfa_init(nnfa, children, nnfa_num, group_names);
+            nnfa_init(nnfa, children);
             
             end_state_counts.push_back(main_nfa->state_count);
 
@@ -82,19 +82,19 @@ void nnfa_init(std::vector<Nfa*>& nnfa, Node* ast_node, int nnfa_num, std::vecto
     }
     // REPEAT
     else if (ast_node->type == NodeType::REPEAT) {
-        Nfa* main_nfa = nnfa.at(nnfa_num);
+        Nfa* main_nfa = nnfa.at(0);
         std::vector<int> range = std::get<std::vector<int>>(ast_node->data);
 
         // '{}' 
         if (range.at(0) == range.at(1)) {
             for (int i = 0; i < range.at(0); ++i) {
-                nnfa_init(nnfa, ast_node->childrens.at(0), nnfa_num, group_names);
+                nnfa_init(nnfa, ast_node->childrens.at(0));
             }
         }
         // '?'
         else if (range.at(1) == 1) {
             int tmp_state_count = main_nfa->state_count;
-            nnfa_init(nnfa, ast_node->childrens.at(0), nnfa_num, group_names);
+            nnfa_init(nnfa, ast_node->childrens.at(0));
             Adjacency_list* start_transition = main_nfa->transitions.at(tmp_state_count);
             Adjacency_list* tmp_start_transition;
 
@@ -116,7 +116,7 @@ void nnfa_init(std::vector<Nfa*>& nnfa, Node* ast_node, int nnfa_num, std::vecto
         // '...'
         else {
             int tmp_state_count = main_nfa->state_count;
-            nnfa_init(nnfa, ast_node->childrens.at(0), nnfa_num, group_names);
+            nnfa_init(nnfa, ast_node->childrens.at(0));
             Adjacency_list* start_transition = main_nfa->transitions.at(tmp_state_count);
             Adjacency_list* tmp_start_transition;
             bool is_start_transition = false;
@@ -149,7 +149,7 @@ void nnfa_init(std::vector<Nfa*>& nnfa, Node* ast_node, int nnfa_num, std::vecto
     }
     // GROUP
     else if (ast_node->type == NodeType::GROUP) {
-        Nfa* main_nfa = nnfa.at(nnfa_num);
+        Nfa* main_nfa = nnfa.at(0);
         main_nfa->state_count++;
 
         // if the last operation was not '...'
@@ -159,53 +159,27 @@ void nnfa_init(std::vector<Nfa*>& nnfa, Node* ast_node, int nnfa_num, std::vecto
         }
         else 
             main_nfa->transitions.back()->next = new Adjacency_list(std::get<std::string>(ast_node->data), main_nfa->state_count);
-        Nfa* group_nfa = new Nfa();
+        Nfa& group_nfa = new Nfa();
         nnfa.push_back(group_nfa);
-        group_names.push_back(std::get<std::string>(ast_node->data));
-        nnfa_init(nnfa, ast_node->childrens.at(0), (nnfa.size() - 1), group_names);
+        group_nnfa_init(nnfa, (nnfa.size() - 1))
     }
 }
 
 
-void print_nnfa(std::vector<Nfa*>& nnfa, std::vector<std::string>& group_names) {
+void print_nfa(Nfa* nfa) {
     int counter = 0;
 
-    // Deleting all duplicate group names
-    std::sort(group_names.begin(), group_names.end());
-    auto last = std::unique(group_names.begin(), group_names.end());
-    group_names.erase(last, group_names.end());
+    for (Adjacency_list* transition: nfa->transitions) {
+        while (transition != nullptr) {
+            std::cout << counter << " -> " << std::get<std::pair<char, int>>(transition->transition).second;
 
-    for (int i = 0; i < group_names.size() + 1; ++i) {
-        std::cout << std::endl;
-        counter = 0;
-        Nfa* main_nfa = nnfa.at(i);
-
-        if (i == 0) 
-            std::cout << "Main automata" << std::endl;
-        else 
-            std::cout << "\"" << group_names.at(i-1) << "\"" << " automata" << std::endl;    
-
-        for (Adjacency_list* transition: main_nfa->transitions) {
-            while (transition != nullptr) {
-                if (std::holds_alternative<std::pair<char, int>>(transition->transition)) {
-                    std::cout << counter << " -> " << std::get<std::pair<char, int>>(transition->transition).second;
-                    
-                    if (std::get<std::pair<char, int>>(transition->transition).first != '\0')
-                        std::cout << " '" << std::get<std::pair<char, int>>(transition->transition).first << "'" << std::endl;
-                    else 
-                        std::cout << " epsilon" << std::endl;
-                }
-                else {
-                    std::cout << counter << " -> " << std::get<std::pair<std::string, int>>(transition->transition).second;
-                    std::cout << "\"" << group_names.at(i) << "\"" << std::endl;    
-                }
-
-                transition = transition->next;
-            }
-            counter++;
+            if (std::get<std::pair<char, int>>(transition->transition).first != '\0')
+                std::cout << " '" << std::get<std::pair<char, int>>(transition->transition).first << "'" << std::endl;
+            else 
+                std::cout << " epsilon" << std::endl;
+            transition = transition->next;
         }
+        std::cout << std::endl;
+        counter++;
     }
-    std::cout << std::endl;  
 }
-
-

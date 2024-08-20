@@ -249,29 +249,27 @@ Node* Parser::parse_expr() {
     return root;
 }
 
-void Ast::collect_groups(std::vector<std::string>& groups, int& groups_count, Node* node) {
+void Ast::collect_groups(std::vector<std::string>& group_names, Node* node) {
     if (node == nullptr)
         return;
     if (node->type == NodeType::GROUP) {
         std::string group_name = std::get<std::string>(node->data);
-        groups.push_back(group_name);
-        groups_count++;
+        group_names.push_back(group_name);
     }
     for (Node* children: node->childrens)
-        collect_groups(groups, groups_count, children); 
+        collect_groups(group_names, children); 
 }
 
-bool Ast::prepare(int& groups_count) {
+bool Ast::prepare(std::vector<std::string>& group_names) {
     if (root == nullptr) {
         return true;
     }
-    std::vector<std::string> groups;
-    collect_groups(groups, groups_count, root);
+    collect_groups(group_names, root);
     
     // checking if all group names are unique
     std::set<std::string> unique_strings;
     
-    for (const auto& group_name : groups) {
+    for (const auto& group_name : group_names) {
         if (!unique_strings.insert(group_name).second) {
             std::cerr << "Duplicate names were found for the groups" << std::endl; 
             std::cerr << "Compilation failed" << std::endl;

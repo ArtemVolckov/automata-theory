@@ -8,21 +8,33 @@ int Regex::compile(std::string_view cregex) {
 
     if (parser.check_and_print_error()) 
         return REGCOMP_ERR;
-    int groups_count = 0;
+    std::vector<std::string> group_names;
 
-    if (!ast.prepare(groups_count))
+    if (!ast.prepare(group_names))
         return REGCOMP_ERR;
 
+    group_names.clear();
     std::vector<Nfa*> nnfa;
     Nfa nfa;
     nnfa.push_back(&nfa);
-    nnfa_init(nnfa, ast.root);
+    nnfa_init(nnfa, ast.root, 0, group_names);
 
-    if (groups_count != (nnfa.size() - 1)) {
+#if 0
+    if (group_names.size() != (nnfa.size() - 1)) {
         std::cerr << "Redefining the group due to the use of repetitions: '{}', '...'" << std::endl;
         std::cerr << "Compilation failed" << std::endl;
+
+        for (int i = 1; i < nnfa.size(); ++i)
+            delete nnfa.at(i);
+
         return REGCOMP_ERR;
     }
-    print_nfa(nnfa.at(0));
+#endif 
+
+    print_nnfa(nnfa, group_names);
+
+    for (int i = 1; i < nnfa.size(); ++i)
+        delete nnfa.at(i);
+
     return REGCOMP_SUCCESS; 
 }

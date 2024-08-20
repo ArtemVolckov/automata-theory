@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <cstdlib>
+#include <algorithm>
 #include <vector>
 #include <set>
 #include <variant>
@@ -73,9 +74,9 @@ typedef struct Ast {
     }
     
     // Simplifying the tree and checking errors with groups
-    bool prepare(int& groups_count);
+    bool prepare(std::vector<std::string>& group_names);
     // Tree traversal with the search for groups and replacing them with their children
-    void collect_groups(std::vector<std::string>& groups, int& groups_count, Node* node);
+    void collect_groups(std::vector<std::string>& group_names, Node* node);
 } Ast;
 
 class Parser {
