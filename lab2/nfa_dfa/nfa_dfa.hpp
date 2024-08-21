@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <queue>
 #include <map>
+#include <unordered_map>
+#include <unordered_set>
 
 #include "ast.hpp"
 
@@ -25,6 +27,7 @@ typedef struct Adjacency_list {
 typedef struct Nfa {
     std::string name;
     int state_count = 0;
+    std::set<int> final_states;
     std::vector<Adjacency_list*> transitions;
 
     // for the main nfa
@@ -48,12 +51,14 @@ typedef struct Nfa {
     }        
 } Nfa;
 
-void print_nnfa(const std::vector<Nfa*>& nnfa);
 void nnfa_init(std::vector<Nfa*>& nnfa, Node* ast_node, int nnfa_num);
+void nnfa_prepare(std::vector<Nfa*>& nnfa);
+void print_nnfa(const std::vector<Nfa*>& nnfa);
 
 typedef struct Dfa {
     std::string name;
     int state_count = 0;
+    std::set<int> final_states;
     std::vector<Adjacency_list*> transitions;
 
     // for the main dfa 
@@ -77,6 +82,8 @@ typedef struct Dfa {
     }
 } Dfa;
 
-void print_ndfa(const std::vector<Dfa*>& ndfa);
 std::set<int> epsilon_closure(const Nfa& nfa, int state);
 std::vector<Dfa*> nfa_to_dfa(std::vector<Nfa*>& nnfa);
+void print_ndfa(const std::vector<Dfa*>& ndfa);
+
+Dfa* minimize_dfa(const Dfa& input_dfa);

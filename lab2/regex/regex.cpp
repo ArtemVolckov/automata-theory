@@ -17,19 +17,29 @@ int Regex::compile(std::string_view cregex) {
     Nfa nfa;
     nnfa.push_back(&nfa);
     nnfa_init(nnfa, ast.root, 0);
-    std::cout << "Nfa count = " << nnfa.size() << std::endl;
+    nnfa_prepare(nnfa);
+    std::cout << std::endl << "NFA COUNT = " << nnfa.size() << std::endl;
 
     print_nnfa(nnfa);
 
     std::vector<Dfa*> ndfa = nfa_to_dfa(nnfa);
-    std::cout << "Dfa count = " << ndfa.size() << std::endl;
+    std::cout << "DFA COUNT = " << ndfa.size() << std::endl;
 
     print_ndfa(ndfa);
+
+    std::vector<Dfa*> min_ndfa;
+    Dfa* min_dfa = minimize_dfa(*ndfa.at(0));
+    min_ndfa.push_back(min_dfa);
+    std::cout << "MIN DFA COUNT = " << ndfa.size() << std::endl;
+
+    print_ndfa(min_ndfa);
 
     for (int i = 1; i < nnfa.size(); ++i)
         delete nnfa.at(i);
     for (int i = 0; i < ndfa.size(); ++i)
         delete ndfa.at(i);
+    for (int i = 0; i < min_ndfa.size(); ++i)
+        delete min_ndfa.at(i);
 
     return REGCOMP_SUCCESS; 
 }
