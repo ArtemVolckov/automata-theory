@@ -5,6 +5,7 @@
 #include <map>
 #include <unordered_map>
 #include <unordered_set>
+#include <set>
 
 #include "ast.hpp"
 
@@ -86,4 +87,5 @@ std::set<int> epsilon_closure(const Nfa& nfa, int state);
 std::vector<Dfa*> nfa_to_dfa(std::vector<Nfa*>& nnfa);
 void print_ndfa(const std::vector<Dfa*>& ndfa);
 
-Dfa* minimize_dfa(const Dfa& input_dfa);
+int get_transition(const Dfa& dfa, int state, char symbol);
+std::vector<Dfa*> minimize_dfa(std::vector<Dfa*>& ndfa);

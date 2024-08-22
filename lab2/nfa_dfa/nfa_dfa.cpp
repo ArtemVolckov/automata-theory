@@ -375,166 +375,198 @@ void print_ndfa(const std::vector<Dfa*>& ndfa) {
     std::cout << std::endl;
 }
 
-int getTransition(const Dfa& dfa, int state, char symbol) {
+int get_transition(const Dfa& dfa, int state, char symbol) {
     if (state >= dfa.transitions.size())
         return -1;
     Adjacency_list* current_transition = dfa.transitions.at(state);
 
-    while (current_transition) {
+    while (current_transition != nullptr) {
         if (std::holds_alternative<std::pair<char, int>>(current_transition->transition)) {
-            auto [c, next_state] = std::get<std::pair<char, int>>(current_transition->transition);
+            std::pair pair = std::get<std::pair<char, int>>(current_transition->transition);
 
-            if (c == symbol) {
-                return next_state;
-            }
+            if (pair.first == symbol)
+                return pair.second;
         }
         current_transition = current_transition->next;
     }
-    return -1;
+    return -1;             
 }
 
-Dfa* minimize_dfa(const Dfa& input_dfa) {
-    std::unordered_set<char> alphabet;
-    std::vector<std::unordered_set<int>> partition;
-    std::unordered_map<int, int> state_to_set;
 
-    // Шаг 1: Определение алфавита
-    for (Adjacency_list* current_transition: input_dfa.transitions) {
-        while (current_transition) {
-            if (std::holds_alternative<std::pair<char, int>>(current_transition->transition)) {
-                alphabet.insert(std::get<std::pair<char, int>>(current_transition->transition).first);
-            }
-            current_transition = current_transition->next;
-        }
-    }
-    // Шаг 2: Начальное разбиение на принимающие и непринимающие состояния
-    std::unordered_set<int> accepting, non_accepting;
+std::vector<Dfa*> minimize_dfa(std::vector<Dfa*>& ndfa) {
+    std::vector<Dfa*> min_ndfa;
 
-    for (int i = 0; i < input_dfa.state_count; ++i) {
-        if (input_dfa.final_states.count(i))
-            accepting.insert(i);
-        else 
-            non_accepting.insert(i);
-    }
-    // swap back if something
-    if (!non_accepting.empty()) partition.push_back(non_accepting);
-    if (!accepting.empty()) partition.push_back(accepting);
+    for (const Dfa* dfa: ndfa) {
+        std::unordered_set<char> alphabet;
+        std::vector<std::set<int>> partition;
 
-    // Шаг 3: Уточнение разбиения
-    std::queue<std::pair<int, char>> worklist;
-
-    for (int i = 0; i < partition.size(); ++i) {
-        for (char symbol : alphabet)
-            worklist.push({i, symbol});
-    }
-    while (!worklist.empty()) {
-        //std::cout << "gg";
-        auto [set_idx, symbol] = worklist.front();
-        worklist.pop();
-        std::unordered_map<int, std::unordered_set<int>> split;
-
-        for (int state : partition[set_idx]) {
-            std::cout << symbol;
-            int next_state = getTransition(input_dfa, state, symbol);
-
-            if (next_state != -1) {
-                int next_set = state_to_set[next_state];
-                //std::cout << next_set << std::endl;
-                split[next_set].insert(state);
-            }
-        }
-        if (split.size() > 1) {
-            //std::cout << "gg";
-            auto it = split.begin();
-            partition[set_idx] = it->second;
-            ++it;
-
-            for (; it != split.end(); ++it) {
-                partition.push_back(it->second);
-
-                for (char c : alphabet) {
-                    worklist.push({partition.size() - 1, c});
-                }
-            }
-            // Обновление state_to_set
-            for (int i = 0; i < partition.size(); ++i) {
-                for (int state : partition[i]) {
-                    state_to_set[state] = i;
-                }
-            }
-        }
-    }
-    // Шаг 4: Построение минимизированного ДКА
-    Dfa* min_dfa = new Dfa();
-    min_dfa->state_count = partition.size();
-    std::cout << "Min dfa state count = " << min_dfa->state_count << std::endl;
-
-    std::unordered_map<int, int> old_to_new_state;
-
-    for (int i = 0; i < partition.size(); ++i) {
-        for (int old_state : partition[i]) {
-            old_to_new_state[old_state] = i;
-
-            if (input_dfa.final_states.count(old_state)) {
-                min_dfa->final_states.insert(i);
-            }
-        }
-    }
-    // Создание переходов для минимизированного ДКА
-    min_dfa->transitions.resize(min_dfa->state_count);
-
-    for (int i = 0; i < partition.size(); ++i) {
-        int old_state = *partition[i].begin(); // Берем любое состояние из множества
-
-        for (char symbol : alphabet) {
-            int next_old_state = getTransition(input_dfa, old_state, symbol);
-
-            if (next_old_state != -1) {
-                int next_new_state = old_to_new_state[next_old_state];
-                Adjacency_list* new_transition = new Adjacency_list(symbol, next_new_state);
-
-                if (min_dfa->transitions[i] == nullptr) {
-                    min_dfa->transitions[i] = new_transition;
-                } 
-                else {
-                    Adjacency_list* current_transition = min_dfa->transitions[i];
-
-                    while (current_transition->next != nullptr) {
-                        current_transition = current_transition->next;
-                    }
-                    current_transition->next = new_transition;
-                }
-            }
-        }
-    }
-#if 0
-    // Определение нового начального состояния
-    int new_start_state = old_to_new_state[0]; // Предполагаем, что 0 - начальное состояние в исходном ДКА
-
-    // Перенумерация состояний, чтобы новое начальное состояние было 0
-    if (new_start_state != 0) {
-        std::vector<Adjacency_list*> new_transitions(min_dfa->state_count);
-        std::set<int> new_final_states;
-
-        for (int i = 0; i < min_dfa->state_count; ++i) {
-            int new_state = (i - new_start_state + min_dfa->state_count) % min_dfa->state_count;
-            new_transitions[new_state] = min_dfa->transitions[i];
-
-            if (min_dfa->final_states.count(i)) {
-                new_final_states.insert(new_state);
-            }
-            Adjacency_list* current_transition = new_transitions[new_state];
-            while (current_transition != nullptr) {
-                if (std::holds_alternative<std::pair<char, int>>(current_transition->transition)) {
-                    auto& [symbol, next_state] = std::get<std::pair<char, int>>(current_transition->transition);
-                    next_state = (next_state - new_start_state + min_dfa->state_count) % min_dfa->state_count;
-                }
+        for (Adjacency_list* current_transition: dfa->transitions) {
+            while (current_transition) {
+                if (std::holds_alternative<std::pair<char, int>>(current_transition->transition)) 
+                    alphabet.insert(std::get<std::pair<char, int>>(current_transition->transition).first);
                 current_transition = current_transition->next;
             }
         }
-        min_dfa->transitions = new_transitions;
-        min_dfa->final_states = new_final_states;
+        std::set<int> accepting, non_accepting;
+
+        for (int i = 0; i < dfa->state_count; ++i) {
+            if (dfa->final_states.count(i))
+                accepting.insert(i);
+            else 
+                non_accepting.insert(i);
+        }
+        if (!non_accepting.empty()) partition.push_back(non_accepting);
+        if (!accepting.empty()) partition.push_back(accepting);
+        bool is_splited = false;
+        
+        for (;;) { 
+            for (int i = 0; i < partition.size(); ++i) {
+                std::set<int> group_states = partition.at(i);
+
+                for (char symbol: alphabet) { 
+                    for (int current_state: group_states) {
+                        int next_state = get_transition(*dfa, current_state, symbol);
+
+                        if (next_state != -1) {
+                            int next_set;
+
+                            for (next_set = 0; next_set < partition.size(); ++next_set) {
+                                if (partition.at(next_set).count(next_state) > 0) 
+                                    break;
+                            }
+                            std::set<int> group_states_tmp;
+                            group_states_tmp.insert(current_state);
+
+                            for (int state_tmp: group_states) {
+                                int next_state_tmp = get_transition(*dfa, state_tmp, symbol);
+
+                                if (next_state_tmp != -1) {
+                                    int next_set_tmp;
+
+                                    for (next_set_tmp = 0; next_set_tmp < partition.size(); ++next_set_tmp) {
+                                        if (partition.at(next_set_tmp).count(next_state_tmp) > 0) 
+                                            break;
+                                    }
+                                    if (next_set_tmp == next_set)
+                                        group_states_tmp.insert(state_tmp);
+                                }
+                            }
+                            if (group_states_tmp.size() != group_states.size()) {
+                                // removing duplicates
+                                for (int state: group_states_tmp)
+                                    partition.at(i).erase(state);
+                                partition.push_back(group_states_tmp);
+                                is_splited = true;
+                                break;
+                            }
+                            else {
+                                break;    
+                            }
+                        } 
+                    }
+                    if (is_splited)
+                        break;
+                }
+                if (is_splited)
+                    break;
+            }
+            if (!is_splited)
+                break;
+            is_splited = false;
+        }
+        // Creating a new minimized DFA
+        Dfa* min_dfa;
+        
+        if (dfa->name == "")
+            min_dfa = new Dfa;
+        else
+            min_dfa = new Dfa(dfa->name);
+        min_ndfa.push_back(min_dfa);
+
+        // Looking for the initial state
+        bool is_find = false;
+        int set_num;
+
+        for (set_num = 0; set_num < partition.size(); ++set_num) {
+            for (int state: partition.at(set_num)) {
+                if (state == 0) {
+                    is_find = true;
+                    break;
+                }
+            }
+            if (is_find)
+                break;
+        }
+        is_find = false;
+        // first group -> start group
+        std::set<int> set_tmp = partition.at(set_num);
+        partition.erase(partition.begin() + set_num);
+        partition.insert(partition.begin(), set_tmp);
+
+        for (int i = 0; i < partition.size(); ++i) {
+            for (int state: partition.at(i)) {
+                if (dfa->final_states.count(state)) {
+                    min_dfa->final_states.insert(i);
+                    break;
+                }
+            }
+        }
+        //min_dfa->transitions.resize(partition.size(), nullptr); 
+        int new_transitions_counter = 0;
+
+        for (int i = 0; i < partition.size(); ++i) {
+            int state = *partition.at(i).begin();
+
+            if (state >= dfa->transitions.size()) {
+                if (i != (partition.size() - 1))
+                    min_dfa->transitions.push_back(nullptr);
+                continue;
+            }
+            Adjacency_list* tmp_transition = dfa->transitions.at(state);
+            std::pair<char, int> pair;
+
+            if (std::holds_alternative<std::pair<char, int>>(tmp_transition->transition)) {
+                pair = std::get<std::pair<char, int>>(tmp_transition->transition);
+            }
+            int set_num_tmp;
+
+            for (set_num_tmp = 0; set_num_tmp < partition.size(); ++set_num_tmp) {
+                for (int state_tmp : partition.at(set_num_tmp))
+                    if (state_tmp == pair.second) {
+                        is_find = true;
+                        break;
+                }
+                if (is_find)
+                    break;
+            }
+            is_find = false;
+            Adjacency_list* new_transition = new Adjacency_list(pair.first, set_num_tmp);
+            min_dfa->transitions.push_back(new_transition);
+
+            while (tmp_transition->next != nullptr) {
+                tmp_transition = tmp_transition->next;
+                std::pair<char, int> pair_tmp;
+
+                if (std::holds_alternative<std::pair<char, int>>(tmp_transition->transition)) {
+                    pair_tmp = std::get<std::pair<char, int>>(tmp_transition->transition);
+                }
+                for (set_num_tmp = 0; set_num_tmp < partition.size(); ++set_num_tmp) {
+                    for (int state_tmp : partition.at(set_num_tmp))
+                        if (state_tmp == pair.second) {
+                            is_find = true;
+                            break;
+                    }
+                    if (is_find)
+                        break;
+                }
+                is_find = false;
+                new_transition->next = new Adjacency_list(pair_tmp.first, set_num_tmp);
+                new_transition = new_transition->next; 
+            }
+            new_transitions_counter++;
+        }
+        // including the start state
+        min_dfa->state_count = partition.size();
     }
-#endif
-    return min_dfa;
+    return min_ndfa;
 }

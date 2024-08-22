@@ -27,10 +27,8 @@ int Regex::compile(std::string_view cregex) {
 
     print_ndfa(ndfa);
 
-    std::vector<Dfa*> min_ndfa;
-    Dfa* min_dfa = minimize_dfa(*ndfa.at(0));
-    min_ndfa.push_back(min_dfa);
-    std::cout << "MIN DFA COUNT = " << ndfa.size() << std::endl;
+    std::vector<Dfa*> min_ndfa = minimize_dfa(ndfa);
+    std::cout << "MIN DFA COUNT = " << min_ndfa.size() << std::endl;
 
     print_ndfa(min_ndfa);
 
