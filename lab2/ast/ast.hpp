@@ -80,10 +80,7 @@ typedef struct Ast {
 
 class Parser {
     private:
-        bool is_error = false;
-        std::string err_msg;
         std::string cregex;
-        int position = 0;
 
         bool get_symbol(char* symbol) {
             if (position == cregex.length())
@@ -125,7 +122,9 @@ class Parser {
         void report(std::string_view err_msg);
 
     public:
+        int position = 0;
+        bool is_error = false;
+        std::string err_msg;
         Parser(std::string_view cregex) : cregex(cregex) {}
         Node* parse_expr();
-        bool check_and_print_error();
 };

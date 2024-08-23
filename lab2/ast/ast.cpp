@@ -1,19 +1,5 @@
 #include "ast.hpp"
 
-bool Parser::check_and_print_error() {
-    if (is_error) {
-        std::cerr << err_msg << std::endl;
-        std::cerr << "Parser error: Compilation failed" << std::endl;
-        return true;
-    }
-    else if (position != cregex.length()) {
-        std::cerr << "Expression parsing error" << std::endl;
-        std::cerr << "Parser error: Compilation failed" << std::endl;
-        return true;
-    }
-    return false;
-}
-
 void Parser::report(std::string_view err_msg) {
     if (!is_error) {
         is_error = true;
@@ -270,11 +256,8 @@ bool Ast::prepare(std::vector<std::string>& group_names) {
     std::set<std::string> unique_strings;
     
     for (const auto& group_name : group_names) {
-        if (!unique_strings.insert(group_name).second) {
-            std::cerr << "Duplicate names were found for the groups" << std::endl; 
-            std::cerr << "Compilation failed" << std::endl;
+        if (!unique_strings.insert(group_name).second)
             return false;
-        }
     }
     return true;
 }

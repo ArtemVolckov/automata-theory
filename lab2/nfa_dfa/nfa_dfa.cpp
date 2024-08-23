@@ -375,7 +375,7 @@ void print_ndfa(const std::vector<Dfa*>& ndfa) {
     std::cout << std::endl;
 }
 
-int get_transition(const Dfa& dfa, int state, char symbol) {
+int get_transition(const Dfa& dfa, int state, std::variant<std::string, char> symbol) {
     if (state >= dfa.transitions.size())
         return -1;
     Adjacency_list* current_transition = dfa.transitions.at(state);
@@ -383,9 +383,19 @@ int get_transition(const Dfa& dfa, int state, char symbol) {
     while (current_transition != nullptr) {
         if (std::holds_alternative<std::pair<char, int>>(current_transition->transition)) {
             std::pair pair = std::get<std::pair<char, int>>(current_transition->transition);
-
-            if (pair.first == symbol)
-                return pair.second;
+           
+            if (std::holds_alternative<char>(symbol)) { 
+                if (pair.first == std::get<char>(symbol))
+                    return pair.second;
+            }
+        }
+        else { 
+            std::pair pair = std::get<std::pair<std::string, int>>(current_transition->transition);
+           
+            if (std::holds_alternative<std::string>(symbol)) {
+                if (pair.first == std::get<std::string>(symbol))
+                    return pair.second;
+            }
         }
         current_transition = current_transition->next;
     }
@@ -397,13 +407,15 @@ std::vector<Dfa*> minimize_dfa(std::vector<Dfa*>& ndfa) {
     std::vector<Dfa*> min_ndfa;
 
     for (const Dfa* dfa: ndfa) {
-        std::unordered_set<char> alphabet;
+        std::unordered_set<std::variant<std::string, char>> alphabet;
         std::vector<std::set<int>> partition;
 
         for (Adjacency_list* current_transition: dfa->transitions) {
             while (current_transition) {
                 if (std::holds_alternative<std::pair<char, int>>(current_transition->transition)) 
                     alphabet.insert(std::get<std::pair<char, int>>(current_transition->transition).first);
+                else
+                    alphabet.insert(std::get<std::pair<std::string, int>>(current_transition->transition).first);
                 current_transition = current_transition->next;
             }
         }
@@ -423,7 +435,7 @@ std::vector<Dfa*> minimize_dfa(std::vector<Dfa*>& ndfa) {
             for (int i = 0; i < partition.size(); ++i) {
                 std::set<int> group_states = partition.at(i);
 
-                for (char symbol: alphabet) { 
+                for (std::variant<std::string, char> symbol: alphabet) { 
                     for (int current_state: group_states) {
                         int next_state = get_transition(*dfa, current_state, symbol);
 
@@ -523,44 +535,83 @@ std::vector<Dfa*> minimize_dfa(std::vector<Dfa*>& ndfa) {
                 continue;
             }
             Adjacency_list* tmp_transition = dfa->transitions.at(state);
-            std::pair<char, int> pair;
 
-            if (std::holds_alternative<std::pair<char, int>>(tmp_transition->transition)) {
-                pair = std::get<std::pair<char, int>>(tmp_transition->transition);
+            if (tmp_transition == nullptr) {
+                min_dfa->transitions.push_back(nullptr);
+                continue;
             }
             int set_num_tmp;
 
             for (set_num_tmp = 0; set_num_tmp < partition.size(); ++set_num_tmp) {
-                for (int state_tmp : partition.at(set_num_tmp))
-                    if (state_tmp == pair.second) {
-                        is_find = true;
-                        break;
+                for (int state_tmp : partition.at(set_num_tmp)) {
+                    if (std::holds_alternative<std::pair<char, int>>(tmp_transition->transition)) {
+                        std::pair<char, int> pair = std::get<std::pair<char, int>>(tmp_transition->transition);
+                        
+                        if (state_tmp == pair.second) {
+                            is_find = true;
+                            break;
+                        }
+                    }
+                    else {
+                        std::pair<std::string, int> pair = std::get<std::pair<std::string, int>>(tmp_transition->transition);
+                        
+                        if (state_tmp == pair.second) {
+                            is_find = true;
+                            break;
+                        }
+                    }
                 }
                 if (is_find)
                     break;
             }
             is_find = false;
-            Adjacency_list* new_transition = new Adjacency_list(pair.first, set_num_tmp);
+            Adjacency_list* new_transition;
+
+            if (std::holds_alternative<std::pair<char, int>>(tmp_transition->transition)) {
+                std::pair<char, int> pair = std::get<std::pair<char, int>>(tmp_transition->transition);
+                new_transition = new Adjacency_list(pair.first, set_num_tmp);
+            }
+            else {
+                std::pair<std::string, int> pair = std::get<std::pair<std::string, int>>(tmp_transition->transition);
+                new_transition = new Adjacency_list(pair.first, set_num_tmp);
+            }
             min_dfa->transitions.push_back(new_transition);
 
             while (tmp_transition->next != nullptr) {
                 tmp_transition = tmp_transition->next;
-                std::pair<char, int> pair_tmp;
 
-                if (std::holds_alternative<std::pair<char, int>>(tmp_transition->transition)) {
-                    pair_tmp = std::get<std::pair<char, int>>(tmp_transition->transition);
-                }
                 for (set_num_tmp = 0; set_num_tmp < partition.size(); ++set_num_tmp) {
-                    for (int state_tmp : partition.at(set_num_tmp))
-                        if (state_tmp == pair.second) {
-                            is_find = true;
-                            break;
+                    for (int state_tmp : partition.at(set_num_tmp)) {
+                        if (std::holds_alternative<std::pair<char, int>>(tmp_transition->transition)) {
+                            std::pair<char, int> pair = std::get<std::pair<char, int>>(tmp_transition->transition);
+                            
+                            if (state_tmp == pair.second) {
+                                is_find = true;
+                                break;
+                            }
+                        }
+                        else {
+                            std::pair<std::string, int> pair = std::get<std::pair<std::string, int>>(tmp_transition->transition);
+                            
+                            if (state_tmp == pair.second) {
+                                is_find = true;
+                                break;
+                            }
+                        }
                     }
                     if (is_find)
                         break;
                 }
                 is_find = false;
-                new_transition->next = new Adjacency_list(pair_tmp.first, set_num_tmp);
+
+                if (std::holds_alternative<std::pair<char, int>>(tmp_transition->transition)) {
+                    std::pair<char, int> pair = std::get<std::pair<char, int>>(tmp_transition->transition);
+                    new_transition->next = new Adjacency_list(pair.first, set_num_tmp);
+                }
+                else {
+                    std::pair<std::string, int> pair = std::get<std::pair<std::string, int>>(tmp_transition->transition);
+                    new_transition->next = new Adjacency_list(pair.first, set_num_tmp);
+                }
                 new_transition = new_transition->next; 
             }
             new_transitions_counter++;
