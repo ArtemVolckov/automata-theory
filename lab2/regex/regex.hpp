@@ -17,6 +17,8 @@ class Regex {
     public:
         ~Regex();
 
+        void print_dfa();
+
         void compile(std::string_view cregex);
 
         bool match(std::string_view string_to_match, RegexData& data);
@@ -24,6 +26,10 @@ class Regex {
 
         bool search(std::string_view string_to_search, RegexData& data);
         bool search(std::string_view cregex, std::string_view string_to_search, RegexData& data);
+
+        std::string recover_regex();
+        void inverse_regex();
+        void complement_regex();
 };
 
 class RegexData {

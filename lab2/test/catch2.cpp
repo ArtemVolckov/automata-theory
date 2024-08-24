@@ -108,8 +108,16 @@ TEST_CASE("Match and Search") {
 TEST_CASE("Regex data") {
     Regex regex;
     RegexData data;
+    
+    SECTION("Exceptions") {
+        int size = data.size();
+        REQUIRE_THROWS_AS(data[size], std::out_of_range);
+    }
 
     SECTION("Match") {
+        regex.compile("(<1st_group>a...)");
+        REQUIRE(regex.match("", data));        
+        
         REQUIRE(regex.match("HELLO", "HELLO", data));
         REQUIRE(data.get_matched_string() == "HELLO");
         REQUIRE(data.size() == 0);
@@ -121,6 +129,30 @@ TEST_CASE("Regex data") {
         REQUIRE(data[0].second == "abcddd");
     }
     SECTION("Search") {
+        REQUIRE(regex.search("(ab(c|d...))", "abhaha", data));
+        REQUIRE(data.get_matched_string() == "ab");
+        REQUIRE(data.size() == 0);
+
+        REQUIRE(regex.search("(<name1>(a|b)(<name2>c))", "acccc", data));
+        REQUIRE(data.get_matched_string() == "ac");
+        REQUIRE(data.size() == 2);
+        REQUIRE(data[0].first == "name2");
+        REQUIRE(data[0].second == "c");
+        REQUIRE(data[1].first == "name1");
+        REQUIRE(data[1].second == "ac");
+
+        REQUIRE(regex.search("(<name1>(a|b)(<name2>c...))", "b", data));
+        REQUIRE(data.get_matched_string() == "b");
+        REQUIRE(data.size() == 2);
+        REQUIRE(data[0].first == "name2");
+        REQUIRE(data[0].second == "");
+        REQUIRE(data[1].first == "name1");
+        REQUIRE(data[1].second == "b");
+    }
+}
+
+TEST_CASE("Compiled DFA conversations") {
+    SECTION("RE recovery") {
 
     }
 }

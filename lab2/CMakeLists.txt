@@ -8,7 +8,7 @@ include_directories(${CMAKE_SOURCE_DIR}/regex ${CMAKE_SOURCE_DIR}/ast ${CMAKE_SO
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 
-set(SOURCES test/catch2.cpp regex/regex.cpp ast/ast.cpp nfa_dfa/nfa_dfa.cpp)
+set(SOURCES main.cpp regex/regex.cpp ast/ast.cpp nfa_dfa/nfa_dfa.cpp)
 
 find_package(Catch2 3 REQUIRED)
 

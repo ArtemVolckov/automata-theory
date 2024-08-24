@@ -17,7 +17,10 @@ int main() {
     std::cout << "3.Match with compile" << std::endl;
     std::cout << "4.Search without compile" << std::endl;
     std::cout << "5.Search with compile" << std::endl;
-    std::cout << "6.Print menu" << std::endl;
+    std::cout << "6.Inverse regex" << std::endl;
+    std::cout << "7.Complement regex" << std::endl;
+    std::cout << "8.Print DFA" << std::endl;
+    std::cout << "9.Print menu" << std::endl;
 
     while (1) {
         std::cin >> variant;
@@ -28,7 +31,7 @@ int main() {
             std::cout << "Wrong input: try again" << std::endl;
             continue;
         }
-        if (variant < 0 || variant > 6) {
+        if (variant < 0 || variant > 9) {
             std::cout << "'"<< variant << "' is out of range: try again" << std::endl;
             continue;
         }
@@ -106,6 +109,17 @@ int main() {
                         std::cout << "nomatch" << std::endl; 
                     break;
                 case 6:
+                    regex.inverse_regex();
+                    std::cout << "Successful inversion" << std::endl;
+                    break;
+                case 7:
+                    regex.complement_regex();
+                    std::cout << "Successful complement" << std::endl;
+                    break;
+                case 8:
+                    regex.print_dfa();
+                    break;
+                case 9:
                     std::cout << std::endl;
                     std::cout << "Menu:" << std::endl;
                     std::cout << "0.Exit" << std::endl;
@@ -114,13 +128,16 @@ int main() {
                     std::cout << "3.Match with compile" << std::endl;
                     std::cout << "4.Search without compile" << std::endl;
                     std::cout << "5.Search with compile" << std::endl;
-                    std::cout << "6.Print menu" << std::endl;
+                    std::cout << "6.Inverse regex" << std::endl;
+                    std::cout << "7.Complement regex" << std::endl;
+                    std::cout << "8.Print DFA" << std::endl;
+                    std::cout << "9.Print menu" << std::endl;
             }
             if (is_end) 
                 break;
         }
         catch(...) {
-            return 1;
+            continue;
         }
     }
     return 0;
