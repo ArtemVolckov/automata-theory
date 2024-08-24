@@ -3,17 +3,124 @@
 #include "regex.hpp"
 
 TEST_CASE("Compilation") {
-    SECTION("Parser") {
-        //REQUIRE_THROWS(expr);
-        //REQUIRE_THROWS_AS(expr, expt_type)
-        int a;
+    Regex regex;
+
+    SECTION("Parser exceptions") {
+        REQUIRE_THROWS_AS(regex.compile("|"), std::invalid_argument);
+        REQUIRE_THROWS_AS(regex.compile("a|"), std::invalid_argument);
+        REQUIRE_THROWS_AS(regex.compile("|a"), std::invalid_argument);
+        REQUIRE_THROWS_AS(regex.compile("?"), std::invalid_argument);
+        REQUIRE_THROWS_AS(regex.compile("..."), std::invalid_argument);
+        REQUIRE_THROWS_AS(regex.compile("...a"), std::invalid_argument);
+        REQUIRE_THROWS_AS(regex.compile("{"), std::invalid_argument);
+        REQUIRE_THROWS_AS(regex.compile("}"), std::invalid_argument);
+        REQUIRE_THROWS_AS(regex.compile("a{"), std::invalid_argument);
+        REQUIRE_THROWS_AS(regex.compile("}a"), std::invalid_argument);
+        REQUIRE_THROWS_AS(regex.compile("{}"), std::invalid_argument);
+        REQUIRE_THROWS_AS(regex.compile("a{}a"), std::invalid_argument);
+        REQUIRE_THROWS_AS(regex.compile("a{-1}"), std::invalid_argument);
+        REQUIRE_THROWS_AS(regex.compile("a{1238490123804}"), std::invalid_argument);
+        REQUIRE_THROWS_AS(regex.compile("a{a}"), std::invalid_argument);
+        REQUIRE_THROWS_AS(regex.compile("("), std::invalid_argument);
+        REQUIRE_THROWS_AS(regex.compile(")"), std::invalid_argument);
+        REQUIRE_THROWS_AS(regex.compile("(asdf"), std::invalid_argument);
+        REQUIRE_THROWS_AS(regex.compile("asdf)"), std::invalid_argument);
+        REQUIRE_THROWS_AS(regex.compile("(<name1)"), std::invalid_argument);
+        REQUIRE_THROWS_AS(regex.compile("(<name1>"), std::invalid_argument);
+        REQUIRE_THROWS_AS(regex.compile("(<name1>)"), std::invalid_argument);
+        REQUIRE_THROWS_AS(regex.compile("%|"), std::invalid_argument);
+        REQUIRE_THROWS_AS(regex.compile("|%"), std::invalid_argument);
+        REQUIRE_THROWS_AS(regex.compile("?%"), std::invalid_argument);
+        REQUIRE_THROWS_AS(regex.compile("...%"), std::invalid_argument);
+        REQUIRE_THROWS_AS(regex.compile("%("), std::invalid_argument);
+        REQUIRE_THROWS_AS(regex.compile("(%"), std::invalid_argument);
+        REQUIRE_THROWS_AS(regex.compile("%)"), std::invalid_argument);
+        REQUIRE_THROWS_AS(regex.compile(")%"), std::invalid_argument);
+        REQUIRE_THROWS_AS(regex.compile("%<"), std::invalid_argument);
+        REQUIRE_THROWS_AS(regex.compile(">%"), std::invalid_argument);
+        REQUIRE_THROWS_AS(regex.compile("%(%<name>a)"), std::invalid_argument);
+        REQUIRE_THROWS_AS(regex.compile("(<name>a%)%"), std::invalid_argument);
+        REQUIRE_THROWS_AS(regex.compile("(%<%name>a)"), std::invalid_argument);
+    }
+    SECTION("Ast exceptions") {
+        REQUIRE_THROWS_AS(regex.compile("(<name1>a)|(<name1>b)"), std::invalid_argument);
+        REQUIRE_THROWS_AS(regex.compile("(<name1>a)(<name1>b)"), std::invalid_argument);
+        REQUIRE_THROWS_AS(regex.compile("(<name1>(<name1>))"), std::invalid_argument);
+    }
+    SECTION("Successful cases") {
+        REQUIRE_NOTHROW(regex.compile("(<name1>A){5}"));
+        REQUIRE_NOTHROW(regex.compile("(<name1>(<name2>a|b|c))"));
+        REQUIRE_NOTHROW(regex.compile("abcd"));
+        REQUIRE_NOTHROW(regex.compile("(abc)|a"));
+        REQUIRE_NOTHROW(regex.compile("(abcd)?"));
+        REQUIRE_NOTHROW(regex.compile("(abcd)..."));
+        REQUIRE_NOTHROW(regex.compile("(abcd){5}"));
+        REQUIRE_NOTHROW(regex.compile(""));
+        REQUIRE_NOTHROW(regex.compile("()"));
+        REQUIRE_NOTHROW(regex.compile("((()))"));
+        REQUIRE_NOTHROW(regex.compile("a{2}|b...|c?"));
+        REQUIRE_NOTHROW(regex.compile("%|%"));
+        REQUIRE_NOTHROW(regex.compile("%?%"));
+        REQUIRE_NOTHROW(regex.compile("%...%"));
+        REQUIRE_NOTHROW(regex.compile("%"));
+        REQUIRE_NOTHROW(regex.compile("%%"));
+        REQUIRE_NOTHROW(regex.compile("%%%"));
+        REQUIRE_NOTHROW(regex.compile("."));
+        REQUIRE_NOTHROW(regex.compile(".."));
+        REQUIRE_NOTHROW(regex.compile("(hi((<name1>abcd|111))|GG)"));
     }
 }
 
 TEST_CASE("Match and Search") {
+    Regex regex;
+    RegexData data;
+    
+    SECTION("Match") {
+        REQUIRE_THROWS_AS(regex.match("", data), std::logic_error);
+        REQUIRE_THROWS_AS(regex.match("...", "", data), std::invalid_argument);
 
+        regex.compile("");
+        REQUIRE(regex.match("", data));
+        REQUIRE(!regex.match("hello", data));
+        
+        regex.compile("(abc)|(a...)");
+        REQUIRE(regex.match("", data));
+        REQUIRE(regex.match("abc", data));
+        REQUIRE(regex.match("aaaaaaaaaaaa", data));
+        REQUIRE(!regex.match("abca", data));
+
+        REQUIRE(regex.match("a|b|c", "a", data));
+        REQUIRE(!regex.match("abc", data));
+    }
+    SECTION("Search") {
+        REQUIRE_THROWS_AS(regex.search("", data), std::logic_error);
+        REQUIRE_THROWS_AS(regex.search("...", "", data), std::invalid_argument);
+
+        regex.compile("a...");
+        REQUIRE(regex.search("", data));
+        REQUIRE(regex.search("aaaaaa", data));
+
+        REQUIRE(regex.search("abcd", "abcd.........", data));
+        REQUIRE(!regex.search("abc", data));
+    }
 }
 
 TEST_CASE("Regex data") {
+    Regex regex;
+    RegexData data;
 
+    SECTION("Match") {
+        REQUIRE(regex.match("HELLO", "HELLO", data));
+        REQUIRE(data.get_matched_string() == "HELLO");
+        REQUIRE(data.size() == 0);
+
+        REQUIRE(regex.match("(<name1>abcd...)", "abcddd", data));
+        REQUIRE(data.get_matched_string() == "abcddd");
+        REQUIRE(data.size() == 1);
+        REQUIRE(data[0].first == "name1");
+        REQUIRE(data[0].second == "abcddd");
+    }
+    SECTION("Search") {
+
+    }
 }

@@ -219,13 +219,89 @@ bool Regex::match(std::string_view string_to_match, RegexData& data) {
 }
 
 bool Regex::match(std::string_view cregex, std::string_view string_to_match, RegexData& data) {
+    compile(cregex);
+
+    data.matched_string = "";
+    data.captured_groups.clear();
+    bool is_find = false;
+    int current_state = 0;
+    Dfa* min_dfa = pMinNdfaImpl->min_ndfa.at(0);
+    
+    for (int i = 0; i < string_to_match.length(); ++i) {
+        char symbol = string_to_match.at(i);
+
+        if (current_state >= min_dfa->transitions.size()) {
+            data.captured_groups.clear();
+            return false;
+        }
+        Adjacency_list* current_transition = min_dfa->transitions.at(current_state);
+
+        while (current_transition) {
+            if (std::holds_alternative<std::pair<char, int>>(current_transition->transition)) {
+                std::pair<char, int> pair = std::get<std::pair<char, int>>(current_transition->transition);
+                
+                if (pair.first == symbol) {
+                    current_state = pair.second;
+                    is_find = true;
+                    break;
+                }
+            }
+            else {
+                std::pair<std::string, int> pair = std::get<std::pair<std::string, int>>(current_transition->transition);
+                int group_dfa_num;
+
+                for (group_dfa_num = 0; group_dfa_num < pMinNdfaImpl->min_ndfa.size(); ++group_dfa_num) {
+                    if (pMinNdfaImpl->min_ndfa.at(group_dfa_num)->name == pair.first) 
+                        break;
+                }
+                if (!group_match(group_dfa_num, string_to_match, i, data)) {
+                    data.captured_groups.clear();
+                    return false;
+                }
+                i--;
+                current_state = pair.second;
+                is_find = true;
+                break;
+            }        
+            current_transition = current_transition->next;
+        }
+        if (is_find) {
+            is_find = false;
+            continue;
+        }
+        data.captured_groups.clear();
+        return false;
+    }
+    if (min_dfa->final_states.count(current_state) > 0) {
+        data.matched_string = string_to_match;
+        return true;
+    }
+    data.captured_groups.clear();
     return false;
 }
 
 bool Regex::search(std::string_view string_to_search, RegexData& data) {
+    if (!is_compiled) {
+        std::cerr << "Error: The regular expression is not compiled. Please call the compile() method first." << std::endl;
+        throw std::logic_error("Error");
+    }
+    if (match("", data))
+        return true;
+    for (int i = 0; i <= string_to_search.size(); ++i) {
+        if (match(string_to_search.substr(0, i), data))
+            return true;
+    }
     return false;
 }
 
 bool Regex::search(std::string_view cregex, std::string_view string_to_search, RegexData& data) {
+    compile(cregex);
+    
+    if (match("", data))
+        return true;
+    for (int i = 0; i <= string_to_search.size(); ++i) {
+        if (match(string_to_search.substr(0, i), data))
+            return true;
+    }
     return false;
 }

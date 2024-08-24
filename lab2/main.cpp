@@ -1,38 +1,127 @@
 #include <iostream>
+#include <limits>
 #include "regex.hpp"
 
 int main() {
     Regex regex;
     RegexData regex_data;
     std::string cregex;
-    std::string string_to_match;
-    bool is_match;
-    std::cout << "Enter a regular expression:" << std::endl;
-    std::cin >> cregex;
+    std::string string_to_check;
+    bool is_match = false, is_end = false;
+    int variant;
 
-    try {
-        regex.compile(cregex);
+    std::cout << "Menu:" << std::endl;
+    std::cout << "0.Exit" << std::endl;
+    std::cout << "1.Compile" << std::endl;
+    std::cout << "2.Match without compile" << std::endl;
+    std::cout << "3.Match with compile" << std::endl;
+    std::cout << "4.Search without compile" << std::endl;
+    std::cout << "5.Search with compile" << std::endl;
+    std::cout << "6.Print menu" << std::endl;
 
-        while (1) {
-            std::cout << "Enter string to match:" << std::endl;
+    while (1) {
+        std::cin >> variant;
 
-            if (!(std::cin >> string_to_match)) 
-                break; 
-            is_match = regex.match(string_to_match, regex_data);
-            
-            if (is_match) { 
-                std::cout << "match (" << regex_data.get_matched_string() << ")" << std::endl;
-                std::cout << "Named groups:" << std::endl;
-
-                for (const auto pair: regex_data)
-                    std::cout << pair.first << " (" << pair.second << ")" << std::endl;
-            }
-            else 
-                std::cout << "nomatch" << std::endl; 
+        if (std::cin.fail()) {
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cout << "Wrong input: try again" << std::endl;
+            continue;
         }
-    }
-    catch(...) {
-        return 1;
+        if (variant < 0 || variant > 6) {
+            std::cout << "'"<< variant << "' is out of range: try again" << std::endl;
+            continue;
+        }
+        try {
+            switch (variant) {
+                case 0:
+                    is_end = true;
+                    break;
+                case 1:
+                    std::cout << "Enter a regular expression:" << std::endl;
+                    std::cin >> cregex;
+                    regex.compile(cregex);
+                    std::cout << "Successful compilation" << std::endl;
+                    break;
+                case 2:
+                    std::cout << "Enter string to match:" << std::endl;
+                    std::cin >> string_to_check;
+                    
+                    if (regex.match(string_to_check, regex_data)) { 
+                        std::cout << "match (" << regex_data.get_matched_string() << ")" << std::endl;
+                        std::cout << "Named groups:" << std::endl;
+
+                        for (const auto pair: regex_data)
+                            std::cout << pair.first << " (" << pair.second << ")" << std::endl;
+                    }
+                    else 
+                        std::cout << "nomatch" << std::endl; 
+                    break;
+                case 3:
+                    std::cout << "Enter a regular expression:" << std::endl;
+                    std::cin >> cregex;
+                     
+                    std::cout << "Enter string to match:" << std::endl;
+                    std::cin >> string_to_check;
+                    
+                    if (regex.match(cregex, string_to_check, regex_data)) { 
+                        std::cout << "match (" << regex_data.get_matched_string() << ")" << std::endl;
+                        std::cout << "Named groups:" << std::endl;
+
+                        for (const auto pair: regex_data)
+                            std::cout << pair.first << " (" << pair.second << ")" << std::endl;
+                    }
+                    else 
+                        std::cout << "nomatch" << std::endl; 
+                    break;
+                case 4:
+                    std::cout << "Enter string to search:" << std::endl;
+                    std::cin >> string_to_check;
+                    
+                    if (regex.search(string_to_check, regex_data)) { 
+                        std::cout << "match (" << regex_data.get_matched_string() << ")" << std::endl;
+                        std::cout << "Named groups:" << std::endl;
+
+                        for (const auto pair: regex_data)
+                            std::cout << pair.first << " (" << pair.second << ")" << std::endl;
+                    }
+                    else 
+                        std::cout << "nomatch" << std::endl; 
+                    break;
+                case 5:
+                    std::cout << "Enter a regular expression:" << std::endl;
+                    std::cin >> cregex;
+                    
+                    std::cout << "Enter string to search:" << std::endl;
+                    std::cin >> string_to_check;
+                    
+                    if (regex.search(cregex, string_to_check, regex_data)) { 
+                        std::cout << "match (" << regex_data.get_matched_string() << ")" << std::endl;
+                        std::cout << "Named groups:" << std::endl;
+
+                        for (const auto pair: regex_data)
+                            std::cout << pair.first << " (" << pair.second << ")" << std::endl;
+                    }
+                    else 
+                        std::cout << "nomatch" << std::endl; 
+                    break;
+                case 6:
+                    std::cout << std::endl;
+                    std::cout << "Menu:" << std::endl;
+                    std::cout << "0.Exit" << std::endl;
+                    std::cout << "1.Compile" << std::endl;
+                    std::cout << "2.Match without compile" << std::endl;
+                    std::cout << "3.Match with compile" << std::endl;
+                    std::cout << "4.Search without compile" << std::endl;
+                    std::cout << "5.Search with compile" << std::endl;
+                    std::cout << "6.Print menu" << std::endl;
+            }
+            if (is_end) 
+                break;
+        }
+        catch(...) {
+            return 1;
+        }
     }
     return 0;
 }

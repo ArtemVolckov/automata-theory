@@ -51,5 +51,9 @@ class RegexData {
         auto begin() const { return captured_groups.begin(); }
         auto end()   const { return captured_groups.end();   }
 
+        size_t size() const {
+            return captured_groups.size();
+        }
+
         friend class Regex;
 };
