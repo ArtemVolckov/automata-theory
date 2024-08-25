@@ -21,11 +21,18 @@ void nnfa_init(std::vector<Nfa*>& nnfa, Node* ast_node, int nnfa_num) {
     // CONCAT
     else if (ast_node->type == NodeType::CONCAT) {
         Nfa* current_nfa = nnfa.at(nnfa_num);
+        int tmp_state_count;
 
-        for (Node* children: ast_node->childrens) { 
-            current_nfa->final_states.erase(current_nfa->state_count);
+        for (Node* children: ast_node->childrens) {
+            if (children->type == NodeType::REPEAT) {
+                tmp_state_count = current_nfa->state_count;
+            }
             nnfa_init(nnfa, children, nnfa_num);
-        } 
+
+            if (children->type == NodeType::REPEAT) 
+                current_nfa->final_states.erase(tmp_state_count);
+            current_nfa->final_states.erase(current_nfa->state_count);
+        }
         current_nfa->final_states.insert(current_nfa->state_count);
     }
     // OR

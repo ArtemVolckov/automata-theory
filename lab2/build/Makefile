@@ -153,30 +153,6 @@ ast/ast.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/ast/ast.cpp.s
 .PHONY : ast/ast.cpp.s
 
-main.o: main.cpp.o
-.PHONY : main.o
-
-# target to build an object file
-main.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/main.cpp.o
-.PHONY : main.cpp.o
-
-main.i: main.cpp.i
-.PHONY : main.i
-
-# target to preprocess a source file
-main.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/main.cpp.i
-.PHONY : main.cpp.i
-
-main.s: main.cpp.s
-.PHONY : main.s
-
-# target to generate assembly for a file
-main.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/main.cpp.s
-.PHONY : main.cpp.s
-
 nfa_dfa/nfa_dfa.o: nfa_dfa/nfa_dfa.cpp.o
 .PHONY : nfa_dfa/nfa_dfa.o
 
@@ -225,6 +201,30 @@ regex/regex.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/regex/regex.cpp.s
 .PHONY : regex/regex.cpp.s
 
+test/catch2.o: test/catch2.cpp.o
+.PHONY : test/catch2.o
+
+# target to build an object file
+test/catch2.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/test/catch2.cpp.o
+.PHONY : test/catch2.cpp.o
+
+test/catch2.i: test/catch2.cpp.i
+.PHONY : test/catch2.i
+
+# target to preprocess a source file
+test/catch2.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/test/catch2.cpp.i
+.PHONY : test/catch2.cpp.i
+
+test/catch2.s: test/catch2.cpp.s
+.PHONY : test/catch2.s
+
+# target to generate assembly for a file
+test/catch2.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/test/catch2.cpp.s
+.PHONY : test/catch2.cpp.s
+
 # Help Target
 help:
 	@echo "The following are some of the valid targets for this Makefile:"
@@ -237,15 +237,15 @@ help:
 	@echo "... ast/ast.o"
 	@echo "... ast/ast.i"
 	@echo "... ast/ast.s"
-	@echo "... main.o"
-	@echo "... main.i"
-	@echo "... main.s"
 	@echo "... nfa_dfa/nfa_dfa.o"
 	@echo "... nfa_dfa/nfa_dfa.i"
 	@echo "... nfa_dfa/nfa_dfa.s"
 	@echo "... regex/regex.o"
 	@echo "... regex/regex.i"
 	@echo "... regex/regex.s"
+	@echo "... test/catch2.o"
+	@echo "... test/catch2.i"
+	@echo "... test/catch2.s"
 .PHONY : help
 
 

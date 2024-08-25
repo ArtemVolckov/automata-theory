@@ -6,5 +6,5 @@ CXX_DEFINES =
 
 CXX_INCLUDES = -I/home/artem/ta/lab2/regex -I/home/artem/ta/lab2/ast -I/home/artem/ta/lab2/nfa_dfa -I/home/artem/ta/lab2/test
 
-CXX_FLAGS =  -g -std=gnu++20
+CXX_FLAGS = -std=gnu++20
 

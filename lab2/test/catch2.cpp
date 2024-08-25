@@ -152,7 +152,39 @@ TEST_CASE("Regex data") {
 }
 
 TEST_CASE("Compiled DFA conversations") {
-    SECTION("RE recovery") {
+    RegexData data;
+    Regex regex;
 
+    SECTION("Inversation") {
+        REQUIRE_THROWS_AS(regex.inverse_regex(), std::logic_error);
+        regex.compile("abc");
+        regex.inverse_regex();
+        REQUIRE(regex.match("cba", data));
+        REQUIRE(!regex.match("abc", data));
+
+        regex.compile("(<name>(a|b|c))...mephi");
+        regex.inverse_regex();
+        REQUIRE(regex.match("ihpem", data));
+        REQUIRE(regex.match("ihpemccbbaa", data));
+        REQUIRE(data[0].first == "name");
+        REQUIRE(data[0].second == "a");
+    }
+    SECTION("Complement") {
+        REQUIRE_THROWS_AS(regex.complement_regex(), std::logic_error);
+        regex.compile("a...");
+        regex.complement_regex();
+        REQUIRE(!regex.match("", data));
+        REQUIRE(!regex.match("a", data));
+        REQUIRE(!regex.match("aaaa", data));
+        REQUIRE(regex.match("ab", data));
+        REQUIRE(regex.match("what", data));
+
+        regex.compile("(<name1>a)(c|d...)");
+        regex.complement_regex();
+        REQUIRE(!regex.match("addd", data));
+        REQUIRE(!regex.match("ac", data));
+        REQUIRE(regex.match("aaddd", data));
+        REQUIRE(data[0].first == "name1");
+        REQUIRE(data[0].second == "a");
     }
 }

@@ -443,7 +443,16 @@ std::vector<Adjacency_list*> invert_transitions(const std::vector<Adjacency_list
             if (to_state >= inverted_transitions.size()) {
                 inverted_transitions.push_back(nullptr);
             }
-            inverted_transitions[to_state] = new_node;
+            if (inverted_transitions[to_state] == nullptr)
+                inverted_transitions[to_state] = new_node;
+            else {
+                Adjacency_list* node = inverted_transitions[to_state];
+
+                while (node->next != nullptr) {
+                    node = node->next;
+                }
+                node->next = new_node;
+            }
             current_transition = current_transition->next;
         }
     }
