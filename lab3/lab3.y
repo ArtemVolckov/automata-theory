@@ -1,10 +1,6 @@
-%locations
 %{
-	#ifndef AST
-	#define AST
 	#include "nodes.h"
 	#include "robot.h"
-	#endif
 	#include "tree_parser.h"
 	#define YYSTYPE val
 	struct val
@@ -27,6 +23,8 @@
 	int yylex(void);
 	void yyerror(const char*);
 %}
+
+%locations
 
 %token INTNUM
 %token BOOLNUM
@@ -311,8 +309,6 @@ expr:
 	 
 
 %%
-
-#include <stdbool.h>
 
 int main() {
 	yyparse();

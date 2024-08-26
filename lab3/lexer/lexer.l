@@ -1,66 +1,45 @@
 %{
-#include "parser.tab.h"
-#include <stdlib.h>
-#include <string.h>
+
 #include <iostream>
 #include <string>
+#include <string_view>
+
 %}
 
 %%
 
-// Определение лексем
-[0-9]+              { yylval.intval = atoi(yytext); return INTEGER_LITERAL; }
-"true"             { yylval.boolval = true; return TRUE; }
-"false"            { yylval.boolval = false; return FALSE; }
-"undefined"        { yylval.boolval = false; return UNDEFINED; }
-\"([^\"]*)\"       { yylval.strval = strdup(yytext); return STRING_LITERAL; }
-\'([^\']*)\'       { yylval.strval = strdup(yytext); return STRING_LITERAL; }
-"boolean"          { return BOOLEAN; }
-"integer"          { return INTEGER; }
-"string"           { return STRING; }
-"vector of"        { return PUSH; }
-"do"               { return DO; }
-"until"            { return UNTIL; }
-"if"               { return IF; }
-"then"             { return THEN; }
-"else"             { return ELSE; }
-"right"            { return RIGHT; }
-"left"             { return LEFT; }
-"forward"          { return FORWARD; }
-"back"             { return BACK; }
-"rotate_right"     { return ROTATE_RIGHT; }
-"rotate_left"      { return ROTATE_LEFT; }
-"lms"              { return LSM; }
-"reflect"          { return REFLECT; }
-"drill"            { return DRILL; }
-"function"         { return FUNCTION; }
-"return"           { return RETURN; }
-"application"      { return APPLICATION; }
-"begin"            { return BEGIN; }
-"end"              { return END; }
-"+"                { return '+'; }
-"-"                { return '-'; }
-"*"                { return '*'; }
-"/"                { return '/'; }
-"="                { return '='; }
-"<>"               { return '<>'; }
-"<"                { return '<'; }
-">"                { return '>'; }
-"("                { return '('; }
-")"                { return ')'; }
-","                { return ','; }
-";"                { return ';'; }
-[ \t\n]+           { /* игнорируем пробелы и переводы строк */ }
-.                  { printf("Неправильный символ: %s\n", yytext); }
+-?[0-9]+                     { yylval.int_val = atoi(yytext); return INTEGER_LITERAL; }
+true|false|undefined         { yylval.str_val = yytext; return BOOL_LITERAL; }
+\"[^\"]*\"|\'[^\']*\'        { std::string tmp_str(yytext); yylval.str_val = tmp_str.substr(1, tmp_str.length() - 2); return STRING_LITERAL; }
+boolean|integer|string       { yylval.str_val = yytext; return TYPE; }
+"vector of"                  { return VECTOR; }
+(push|pop)[ \t]+(front|back) { yylval.str_val = yytext; return PUSH_POP_FRONT_BACK }
+to                           { return TO }
+do                           { return DO; }
+until                        { return UNTIL; }
+if                           { return IF; }
+then                         { return THEN; }
+else                         { return ELSE; }
+"function of"                { return FUNCTION; }
+return                       { return RETURN; }
+application                  { return APPLICATION; }
+"+"|"-"|"*"|"/"              { yylval.str_val = yytext; return ARITHMETIC_OP; }
+"="                          { return '='; }
+"<>"|"<"|">"                 { yylval.str_val = yytext; return LOGICAL_OP; }
+"("                          { return '('; }
+")"                          { return ')'; }
+","                          { return ','; }
+"\n"                         { return '\n' }
+[ \t]+                       {}
+.                            { std::cout << "Unknown expression: '" << yytext << "'" << std::endl; }
 
 %%
 
-// Функция для обработки ошибок
-void yyerror(const char *s) {
-    std::cerr << "Лексическая ошибка: " << s << std::endl;
+void yyerror(std::string_view err_msg) {
+    std::cerr << "Lexical error: " << err_msg << std::endl;
 }
 
 int main() {
-    yylex(); // Запуск лексического анализатора
+    yylex(); 
     return 0;
 }

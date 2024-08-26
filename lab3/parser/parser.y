@@ -1,183 +1,80 @@
 %{
 #include <iostream>
 #include <string>
-#include <vector>
-#include <map>
 #include <cstdlib>
 
-using namespace std;
+typedef struct value {
+    bool is_defined;
+    bool bool_val;
+    int int_val;
+    std::string str_val;
+} value;
+
+#define YYSTYPE value
 
 void yyerror(const char *s);
-int yylex();
+int yylex(void);
 
-enum VarType { INTEGER, BOOLEAN, STRING };
-
-struct Var {
-    VarType type;
-    union {
-        int intValue;
-        bool boolValue;
-        string strValue;
-    };
-};
-
-// Хранение переменных
-map<string, Var> variables;  
 %}
 
-%union {
-    int intval;
-    bool boolval;
-    char *strval;
-}
+%token INTEGER_LITERAL BOOL_LITERAL STRING_LITERAL TYPE VECTOR PUSH_POP_FRONT_BACK
+%token TO DO UNTIL IF THEN ELSE FUNCTION RETURN APPLICATION
+%token ARITHMETIC_OP LOGICAL_OP
 
-%token <intval> INTEGER_LITERAL
-%token <boolval> TRUE FALSE UNDEFINED
-%token <strval> STRING_LITERAL
-%token BOOLEAN INTEGER STRING
-%token PUSH POP FRONT BACK
-%token DO UNTIL IF THEN ELSE
-%token RIGHT LEFT FORWARD BACK ROTATE_RIGHT ROTATE_LEFT
-%token LSM REFLECT DRILL
-%token FUNCTION RETURN APPLICATION
-%token BEGIN END
-%token ASSIGN NE // Определение токенов для присвоения и неравенства
-%token IDENTIFIER // Добавлен токен для идентификаторов
+%left ELSE
+%left THEN
+%left IF
+%left '='
+%left ARITHMETIC_OP
+%left LOGICAL_OP
 
-%type <intval> expression
-%type <boolval> logical_expression
-%type <strval> statement
-%type <strval> variable_declaration
-%type <strval> array_declaration
-%type <strval> statements // Добавлено объявление для statements
+%nonassoc '(' ')'
 
 %%
 
-// Начальная точка входа
 program:
-    program statement '\n'
-    | /* пусто */
+    statements
     ;
 
 statements:
-    statements statement '\n'  // Определение для последовательности операторов
-    | /* пусто */
+    statement
+    | statements statement
     ;
 
 statement:
-    variable_declaration
-    | array_declaration
-    | assignment
-    | if_statement
-    | loop
-    | robot_command
-    | function_definition
-    | function_call
-    | BEGIN statements END // Используем определение statements
-    ;
-
-variable_declaration:
-    BOOLEAN variable_list ';'
-    | INTEGER variable_list ';'
-    | STRING variable_list ';'
-    ;
-
-variable_list:
-    variable_list ',' variable
-    | variable
-    ;
-
-variable:
-    IDENTIFIER
-    ;
-
-array_declaration:
-    "vector of" type IDENTIFIER ';'
-    ;
-
-type:
-    INTEGER
-    | BOOLEAN
-    | STRING
-    ;
-
-assignment:
-    variable ASSIGN expression ';' // Изменено на ASSIGN
-    ;
-
-if_statement:
-    IF logical_expression THEN statement ELSE statement
-    | IF logical_expression THEN statement
-    ;
-
-loop:
-    DO statement UNTIL logical_expression
-    ;
-
-robot_command:
-    RIGHT ';'
-    | LEFT ';'
-    | FORWARD ';'
-    | BACK ';'
-    | ROTATE_RIGHT ';'
-    | ROTATE_LEFT ';'
-    | LSM ';'
-    | REFLECT ';'
-    | DRILL ';'
-    ;
-
-function_definition:
-    FUNCTION IDENTIFIER '(' parameter_list ')' statement
-    ;
-
-parameter_list:
-    parameter_list ',' parameter
-    | parameter
-    ;
-
-parameter:
-    IDENTIFIER '=' expression
-    | IDENTIFIER
-    ;
-
-function_call:
-    IDENTIFIER '(' argument_list ')' ';'
-    ;
-
-argument_list:
-    argument_list ',' expression
-    | expression
+    RETURN expression '\n'
+    | IF expression THEN statements ELSE statements '\n'
+    | DO statements UNTIL expression '\n'
+    | FUNCTION TYPE '(' ')' TO TYPE DO statements RETURN expression '\n'
+    | application '\n'
+    | expression '\n'
     ;
 
 expression:
     INTEGER_LITERAL
-    | variable
-    | expression '+' expression
-    | expression '-' expression
-    | expression '*' expression
-    | expression '/' expression
+    | BOOL_LITERAL
+    | STRING_LITERAL
+    | TYPE
+    | expression ARITHMETIC_OP expression
+    | expression LOGICAL_OP expression
     | '(' expression ')'
     ;
 
-logical_expression:
-    expression '=' expression
-    | expression NE expression // Изменено на NE
-    | expression '<' expression
-    | expression '>' expression
-    | TRUE
-    | FALSE
-    | UNDEFINED
+application:
+    APPLICATION '(' arguments ')'
+    ;
+
+arguments:
+    expression
+    | arguments ',' expression
     ;
 
 %%
 
-// Функция обработки ошибок
 void yyerror(const char *s) {
-    cerr << "Error: " << s << endl;
+    std::cerr << "Syntax error: " << s << std::endl;
 }
 
 int main() {
-    cout << "Starting the interpreter..." << endl;
-    yyparse(); // Запускаем парсер
-    return 0;
+    return yyparse();
 }
