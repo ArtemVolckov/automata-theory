@@ -33,6 +33,12 @@ void print_matching_str(regex_t* regex, const char* cline) {
         double time_spent = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
         total_time_spent += time_spent;
         printf("%s\n", cline);
+        return;
+    }
+    else {
+        clock_gettime(CLOCK_MONOTONIC, &end);
+        double time_spent = (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
+        total_time_spent += time_spent;
     }
 }
 

@@ -16,6 +16,7 @@ void collect_statistics(Hashmap* h) {
 
         while (token != NULL) {
             token = strtok(NULL, DELIM);
+
             if (token == NULL)
                 continue;
             key_arr[counter] = token;

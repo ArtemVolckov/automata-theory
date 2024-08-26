@@ -32,11 +32,11 @@ static void SmcRecognizerState_Default(struct SmcRecognizerContext *const fsm)
 }
 
 #define MainMap_Error_letter SmcRecognizerState_letter
-#define MainMap_Error_Default MainMap_DefaultState_Default
-#define MainMap_Start_Default MainMap_DefaultState_Default
-#define MainMap_Command_Default MainMap_DefaultState_Default
-#define MainMap_Blank_Default MainMap_DefaultState_Default
-#define MainMap_Key_Default MainMap_DefaultState_Default
+#define MainMap_Error_Default SmcRecognizerState_Default
+#define MainMap_Start_Default SmcRecognizerState_Default
+#define MainMap_Command_Default SmcRecognizerState_Default
+#define MainMap_Blank_Default SmcRecognizerState_Default
+#define MainMap_Key_Default SmcRecognizerState_Default
 #define MainMap_DefaultState_letter SmcRecognizerState_letter
 
 static void MainMap_DefaultState_reset(struct SmcRecognizerContext *const fsm)
@@ -70,6 +70,11 @@ static void MainMap_DefaultState_Default(struct SmcRecognizerContext *const fsm)
     setState(fsm, &MainMap_Error);
 
 }
+#define MainMap_Error_Default MainMap_DefaultState_Default
+#define MainMap_Start_Default MainMap_DefaultState_Default
+#define MainMap_Command_Default MainMap_DefaultState_Default
+#define MainMap_Blank_Default MainMap_DefaultState_Default
+#define MainMap_Key_Default MainMap_DefaultState_Default
 
 const struct SmcRecognizerState MainMap_Error = {
     MainMap_Error_EOS,
