@@ -7,7 +7,7 @@ int main() {
     RegexData regex_data;
     std::string cregex;
     std::string string_to_check;
-    bool is_match = false, is_end = false;
+    bool is_end = false;
     int variant;
 
     std::cout << "Menu:" << std::endl;

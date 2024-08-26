@@ -72,7 +72,7 @@ typedef struct Ast {
         delete root;
     }
     
-    // Simplifying the tree and checking errors with groups
+    // Searching for the duplicating names of groups
     bool prepare(std::vector<std::string>& group_names);
     // Tree traversal with the search for groups and replacing them with their children
     void collect_groups(std::vector<std::string>& group_names, Node* node);
