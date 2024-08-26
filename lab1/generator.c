@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "config.h"
 
-void gen_str(char* str, int max_add_len, int* position, const char* char_set, size_t char_set_len) { 
+void gen_command(char* str, int max_add_len, int* position, const char* char_set, size_t char_set_len) { 
     if (max_add_len == 0) 
         return;
     int len = (rand() % max_add_len);
@@ -21,25 +21,48 @@ void gen_char(char* str, int* position, const char* char_set, size_t char_set_le
 void gen_strings(int strings, int max_command_length, int max_keylist_length) {
     char buf[BUF_SIZE] = {0};
     int position = 0;
+    int remaining;
+    int current_key_len;
 
     const char* command_char_set = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789./";
     const char* blank_char_set   = "\t ";
-    const char* keylist_char_set = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789\t ";
+    const char* hyphen_char_set = "-"; 
     const char* allnum_char_set  = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
     const size_t command_char_set_len = strlen(command_char_set);
     const size_t blank_char_set_len   = strlen(blank_char_set);
-    const size_t keylist_char_set_len = strlen(keylist_char_set);
     const size_t allnum_char_set_len  = strlen(allnum_char_set);
 
     srand(time(0));
 
     for (int i = 0; i < strings; ++i) {
-        gen_str (buf, max_command_length, &position, command_char_set, command_char_set_len);     // Always
-        gen_char(buf, &position, blank_char_set, blank_char_set_len);                             // Always
-        gen_str (buf, max_keylist_length - 1, &position, keylist_char_set, keylist_char_set_len); // Optional
-        gen_char(buf, &position, allnum_char_set, allnum_char_set_len);                           // Always
+        remaining = max_keylist_length;
+        gen_command(buf, max_command_length, &position, command_char_set, command_char_set_len); // Command
+        
+        while (remaining >= 3) {
+            current_key_len = (rand() % remaining); 
 
+            // single-character key 
+            if (current_key_len == 2 || current_key_len == 3) {
+                gen_char(buf, &position, blank_char_set, blank_char_set_len); // Blank
+                gen_char(buf, &position, hyphen_char_set, 1);
+                gen_char(buf, &position, allnum_char_set, allnum_char_set_len);
+                remaining -= current_key_len + 1;
+            }
+            // multi-character key
+            else if (current_key_len >= 4) {
+                gen_char(buf, &position, blank_char_set, blank_char_set_len); // Blank
+                gen_char(buf, &position, hyphen_char_set, 1);
+                gen_char(buf, &position, hyphen_char_set, 1);
+
+                for (int j = 2; j < current_key_len; ++j) 
+                    gen_char(buf, &position, allnum_char_set, allnum_char_set_len);
+                remaining -= current_key_len + 1;
+            }
+            else {
+                continue;
+            }
+        }
         buf[position] = '\0';        
         puts(buf);
         position = 0;
@@ -53,12 +76,12 @@ int main(int argc, const char* argv[]) {
     // params[1] -> max command length
     // params[2] -> max keylitst length
     
-    int params[3] = {1, 1, 1};
+    int params[3] = {1, 1, 3};
 
     char* end_ptr = NULL;
 
     if (argc > 4) {
-        fprintf(stderr, "Usage: %s [number_of_strings] [max_command_length] [max_keylist_length]\n", *argv);
+        fprintf(stderr, "Usage: %s [number_of_strings] [max_command_length] [keylist_length]\n", *argv);
         fprintf(stderr, "       All parameters are optional.\n");
         return 1; 
     }
@@ -68,6 +91,12 @@ int main(int argc, const char* argv[]) {
         if (*end_ptr != '\0') {
             fprintf(stderr, "Error: Wrong format '%s'\n", argv[i]);
             return 1;
+        }
+        if (i == 3) {
+            if (params[i - 1] < 2) {
+                fprintf(stderr, "Error: '%s' must be greater than or equal to 3\n", argv[i]);
+                return 1;
+            }
         }
         if (params[i - 1] < 1) {
             fprintf(stderr, "Error: '%s' must be greater than or equal to 1\n", argv[i]);

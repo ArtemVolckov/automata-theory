@@ -44,7 +44,7 @@ void print_matching_str(regex_t* regex, const char* cline) {
 
 int main(int argc, const char* argv[]) {
     regex_t regex;
-    const char* cregex = "^[[:alnum:]./][[:alnum:]./]*[[:blank:]][[:alnum:][:blank:]]*[[:alnum:]]$";
+    const char* cregex = "^[[:alnum:]./]+([[:blank:]]+(-[[:alnum:]]|--[[:alnum:]]{2,}))+$";
     char buf[BUF_SIZE] = {0};
     void (*print_function)(regex_t*, const char*) = &print_status_and_str;
 
@@ -59,7 +59,7 @@ int main(int argc, const char* argv[]) {
         }
         print_function = &print_matching_str;
     } 
-    if (regcomp(&regex, cregex, 0)) {
+    if (regcomp(&regex, cregex, REG_EXTENDED)) {
         fprintf(stderr, "Error: Regular expression compilation failed\n");
         return 1;
     }
