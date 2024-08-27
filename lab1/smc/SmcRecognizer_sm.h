@@ -27,7 +27,11 @@ extern const struct SmcRecognizerState MainMap_Error;
 extern const struct SmcRecognizerState MainMap_Start;
 extern const struct SmcRecognizerState MainMap_Command;
 extern const struct SmcRecognizerState MainMap_Blank;
-extern const struct SmcRecognizerState MainMap_Key;
+extern const struct SmcRecognizerState MainMap_First_hyphen;
+extern const struct SmcRecognizerState MainMap_Second_hyphen;
+extern const struct SmcRecognizerState MainMap_Single_character_key;
+extern const struct SmcRecognizerState MainMap_Mylti_character_key_first_symbol;
+extern const struct SmcRecognizerState MainMap_Mylti_character_key_not_first_symbol;
 
 struct SmcRecognizerContext {
     struct SmcRecognizer *_owner;

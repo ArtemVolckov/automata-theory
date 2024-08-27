@@ -49,12 +49,12 @@ int main(int argc, const char* argv[]) {
     void (*print_function)(regex_t*, const char*) = &print_status_and_str;
 
     if (argc > 2) {
-        fprintf(stderr, "Usage: %s [-c | -collect]\n", *argv);
+        fprintf(stderr, "Usage: %s [-c | --collect]\n", *argv);
         return 1;
     } 
     if (argc == 2) {
-        if (strcmp(argv[1], "-c") != 0 && strcmp(argv[1], "-collect") != 0) {
-            fprintf(stderr, "Error: Unknown flag '%s'. Use -c or -collect.\n", argv[1]);
+        if (strcmp(argv[1], "-c") != 0 && strcmp(argv[1], "--collect") != 0) {
+            fprintf(stderr, "Error: Unknown flag '%s'. Use -c or --collect.\n", argv[1]);
             return 1;
         }
         print_function = &print_matching_str;

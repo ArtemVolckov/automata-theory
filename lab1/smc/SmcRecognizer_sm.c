@@ -36,7 +36,11 @@ static void SmcRecognizerState_Default(struct SmcRecognizerContext *const fsm)
 #define MainMap_Start_Default SmcRecognizerState_Default
 #define MainMap_Command_Default SmcRecognizerState_Default
 #define MainMap_Blank_Default SmcRecognizerState_Default
-#define MainMap_Key_Default SmcRecognizerState_Default
+#define MainMap_First_hyphen_Default SmcRecognizerState_Default
+#define MainMap_Second_hyphen_Default SmcRecognizerState_Default
+#define MainMap_Single_character_key_Default SmcRecognizerState_Default
+#define MainMap_Mylti_character_key_first_symbol_Default SmcRecognizerState_Default
+#define MainMap_Mylti_character_key_not_first_symbol_Default SmcRecognizerState_Default
 #define MainMap_DefaultState_letter SmcRecognizerState_letter
 
 static void MainMap_DefaultState_reset(struct SmcRecognizerContext *const fsm)
@@ -52,7 +56,11 @@ static void MainMap_DefaultState_reset(struct SmcRecognizerContext *const fsm)
 #define MainMap_Start_reset MainMap_DefaultState_reset
 #define MainMap_Command_reset MainMap_DefaultState_reset
 #define MainMap_Blank_reset MainMap_DefaultState_reset
-#define MainMap_Key_reset MainMap_DefaultState_reset
+#define MainMap_First_hyphen_reset MainMap_DefaultState_reset
+#define MainMap_Second_hyphen_reset MainMap_DefaultState_reset
+#define MainMap_Single_character_key_reset MainMap_DefaultState_reset
+#define MainMap_Mylti_character_key_first_symbol_reset MainMap_DefaultState_reset
+#define MainMap_Mylti_character_key_not_first_symbol_reset MainMap_DefaultState_reset
 
 static void MainMap_DefaultState_EOS(struct SmcRecognizerContext *const fsm)
 {
@@ -63,6 +71,9 @@ static void MainMap_DefaultState_EOS(struct SmcRecognizerContext *const fsm)
 #define MainMap_Start_EOS MainMap_DefaultState_EOS
 #define MainMap_Command_EOS MainMap_DefaultState_EOS
 #define MainMap_Blank_EOS MainMap_DefaultState_EOS
+#define MainMap_First_hyphen_EOS MainMap_DefaultState_EOS
+#define MainMap_Second_hyphen_EOS MainMap_DefaultState_EOS
+#define MainMap_Mylti_character_key_first_symbol_EOS MainMap_DefaultState_EOS
 
 static void MainMap_DefaultState_Default(struct SmcRecognizerContext *const fsm)
 {
@@ -74,7 +85,11 @@ static void MainMap_DefaultState_Default(struct SmcRecognizerContext *const fsm)
 #define MainMap_Start_Default MainMap_DefaultState_Default
 #define MainMap_Command_Default MainMap_DefaultState_Default
 #define MainMap_Blank_Default MainMap_DefaultState_Default
-#define MainMap_Key_Default MainMap_DefaultState_Default
+#define MainMap_First_hyphen_Default MainMap_DefaultState_Default
+#define MainMap_Second_hyphen_Default MainMap_DefaultState_Default
+#define MainMap_Single_character_key_Default MainMap_DefaultState_Default
+#define MainMap_Mylti_character_key_first_symbol_Default MainMap_DefaultState_Default
+#define MainMap_Mylti_character_key_not_first_symbol_Default MainMap_DefaultState_Default
 
 const struct SmcRecognizerState MainMap_Error = {
     MainMap_Error_EOS,
@@ -131,9 +146,9 @@ static void MainMap_Blank_letter(struct SmcRecognizerContext *const fsm, char LE
     if (BLANK) {
         /* No actions. */
     }
-    else if (ALNUM) {
+    else if (HYPHEN) {
         /* No actions. */
-        setState(fsm, &MainMap_Key);
+        setState(fsm, &MainMap_First_hyphen);
     }    else {
         MainMap_DefaultState_letter(fsm, LET);
     }
@@ -147,7 +162,50 @@ const struct SmcRecognizerState MainMap_Blank = {
     MainMap_Blank_Default,
     3
 };
-static void MainMap_Key_EOS(struct SmcRecognizerContext *const fsm)
+static void MainMap_First_hyphen_letter(struct SmcRecognizerContext *const fsm, char LET)
+{
+
+    if (HYPHEN) {
+        /* No actions. */
+        setState(fsm, &MainMap_Second_hyphen);
+    }
+    else if (ALNUM) {
+        /* No actions. */
+        setState(fsm, &MainMap_Single_character_key);
+    }    else {
+        MainMap_DefaultState_letter(fsm, LET);
+    }
+
+}
+
+const struct SmcRecognizerState MainMap_First_hyphen = {
+    MainMap_First_hyphen_EOS,
+    MainMap_First_hyphen_letter,
+    MainMap_First_hyphen_reset,
+    MainMap_First_hyphen_Default,
+    4
+};
+static void MainMap_Second_hyphen_letter(struct SmcRecognizerContext *const fsm, char LET)
+{
+
+    if (ALNUM) {
+        /* No actions. */
+        setState(fsm, &MainMap_Mylti_character_key_first_symbol);
+    }
+    else {
+        MainMap_DefaultState_letter(fsm, LET);
+    }
+
+}
+
+const struct SmcRecognizerState MainMap_Second_hyphen = {
+    MainMap_Second_hyphen_EOS,
+    MainMap_Second_hyphen_letter,
+    MainMap_Second_hyphen_reset,
+    MainMap_Second_hyphen_Default,
+    5
+};
+static void MainMap_Single_character_key_EOS(struct SmcRecognizerContext *const fsm)
 {
     struct SmcRecognizer *ctxt = getOwner(fsm);
     const struct SmcRecognizerState* EndStateName = getState(fsm);
@@ -157,7 +215,57 @@ static void MainMap_Key_EOS(struct SmcRecognizerContext *const fsm)
     setState(fsm, EndStateName);
 
 }
-static void MainMap_Key_letter(struct SmcRecognizerContext *const fsm, char LET)
+static void MainMap_Single_character_key_letter(struct SmcRecognizerContext *const fsm, char LET)
+{
+
+    if (BLANK) {
+        /* No actions. */
+        setState(fsm, &MainMap_Blank);
+    }
+    else {
+        MainMap_DefaultState_letter(fsm, LET);
+    }
+
+}
+
+const struct SmcRecognizerState MainMap_Single_character_key = {
+    MainMap_Single_character_key_EOS,
+    MainMap_Single_character_key_letter,
+    MainMap_Single_character_key_reset,
+    MainMap_Single_character_key_Default,
+    6
+};
+static void MainMap_Mylti_character_key_first_symbol_letter(struct SmcRecognizerContext *const fsm, char LET)
+{
+
+    if (ALNUM) {
+        /* No actions. */
+        setState(fsm, &MainMap_Mylti_character_key_not_first_symbol);
+    }
+    else {
+        MainMap_DefaultState_letter(fsm, LET);
+    }
+
+}
+
+const struct SmcRecognizerState MainMap_Mylti_character_key_first_symbol = {
+    MainMap_Mylti_character_key_first_symbol_EOS,
+    MainMap_Mylti_character_key_first_symbol_letter,
+    MainMap_Mylti_character_key_first_symbol_reset,
+    MainMap_Mylti_character_key_first_symbol_Default,
+    7
+};
+static void MainMap_Mylti_character_key_not_first_symbol_EOS(struct SmcRecognizerContext *const fsm)
+{
+    struct SmcRecognizer *ctxt = getOwner(fsm);
+    const struct SmcRecognizerState* EndStateName = getState(fsm);
+
+    clearState(fsm);
+    SmcRecognizer_Correct(ctxt);
+    setState(fsm, EndStateName);
+
+}
+static void MainMap_Mylti_character_key_not_first_symbol_letter(struct SmcRecognizerContext *const fsm, char LET)
 {
 
     if (ALNUM) {
@@ -172,12 +280,12 @@ static void MainMap_Key_letter(struct SmcRecognizerContext *const fsm, char LET)
 
 }
 
-const struct SmcRecognizerState MainMap_Key = {
-    MainMap_Key_EOS,
-    MainMap_Key_letter,
-    MainMap_Key_reset,
-    MainMap_Key_Default,
-    4
+const struct SmcRecognizerState MainMap_Mylti_character_key_not_first_symbol = {
+    MainMap_Mylti_character_key_not_first_symbol_EOS,
+    MainMap_Mylti_character_key_not_first_symbol_letter,
+    MainMap_Mylti_character_key_not_first_symbol_reset,
+    MainMap_Mylti_character_key_not_first_symbol_Default,
+    8
 };
 
 #ifdef NO_SMCRECOGNIZER_SM_MACRO

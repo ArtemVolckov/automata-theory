@@ -39,7 +39,7 @@ void (*print_function)(const char*, int) = &print_status_and_str;
     clock_gettime(CLOCK_MONOTONIC, &start); 
 }
 
-^[[:alnum:]./][[:alnum:]./]*[[:blank:]][[:alnum:][:blank:]]*[[:alnum:]]$ {
+^[[:alnum:]./]+([[:blank:]]+(-[[:alnum:]]|--[[:alnum:]]{2,}))+$ {
     is_correct = 1;
     strncpy(buf, yytext, BUF_SIZE);
     counter = strlen(buf); 
@@ -56,12 +56,12 @@ void (*print_function)(const char*, int) = &print_status_and_str;
 
 int main(int argc, char* argv[]) {
     if (argc > 2) {
-        fprintf(stderr, "Usage: %s [-c | -collect]\n", *argv);
+        fprintf(stderr, "Usage: %s [-c | --collect]\n", *argv);
         return 1;
     } 
     if (argc == 2) {
-        if (strcmp(argv[1], "-c") != 0 && strcmp(argv[1], "-collect") != 0) {
-            fprintf(stderr, "Error: Unknown flag '%s'. Use -c or -collect.\n", argv[1]);
+        if (strcmp(argv[1], "-c") != 0 && strcmp(argv[1], "--collect") != 0) {
+            fprintf(stderr, "Error: Unknown flag '%s'. Use -c or --collect.\n", argv[1]);
             return 1;
         }
         print_function = &print_matching_str;

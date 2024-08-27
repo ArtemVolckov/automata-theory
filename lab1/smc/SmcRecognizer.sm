@@ -9,34 +9,56 @@
 %%
 Default
 {
-    reset()                             Start   {Incorrect();}
-    EOS                                 nil     {}
-    Default                             Error   {}
+    reset()                             Start                                {Incorrect();}
+    EOS                                 nil                                  {}
+    Default                             Error                                {}
 }
 
 Error {}
 
 Start
 {
-    letter(LET: char) [ALNUM_DOT_SLASH] Command {}
+    letter(LET: char) [ALNUM_DOT_SLASH] Command                              {}
 }
 
 Command
 {
-    letter(LET: char) [ALNUM_DOT_SLASH] nil     {}
-    letter(LET: char) [BLANK]           Blank   {}
+    letter(LET: char) [ALNUM_DOT_SLASH] nil                                  {}
+    letter(LET: char) [BLANK]           Blank                                {}
 }
 
 Blank
 {
-    letter(LET: char) [BLANK]           nil     {}
-    letter(LET: char) [ALNUM]           Key     {}
+    letter(LET: char) [BLANK]           nil                                  {}
+    letter(LET: char) [HYPHEN]          First_hyphen                         {}
 }
 
-Key
+First_hyphen
 {
-    letter(LET: char) [ALNUM]           nil     {} 
-    letter(LET: char) [BLANK]           Blank   {}
-    EOS                                 nil     {Correct();}
+    letter(LET: char) [HYPHEN]          Second_hyphen                        {}
+    letter(LET: char) [ALNUM]           Single_character_key                 {}
+}
+
+Second_hyphen
+{
+    letter(LET: char) [ALNUM]           Mylti_character_key_first_symbol     {}
+}
+
+Single_character_key
+{
+    letter(LET: char) [BLANK]           Blank                                {}
+    EOS                                 nil                                  {Correct();}
+}
+
+Mylti_character_key_first_symbol
+{
+    letter(LET: char) [ALNUM]           Mylti_character_key_not_first_symbol {}
+}
+
+Mylti_character_key_not_first_symbol
+{
+    letter(LET: char) [ALNUM]           nil                                  {}
+    letter(LET: char) [BLANK]           Blank                                {}
+    EOS                                 nil                                  {Correct();} 
 }
 %%
