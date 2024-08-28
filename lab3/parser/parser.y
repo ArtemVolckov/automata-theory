@@ -5,21 +5,22 @@
 
 %{
 #include <stdio.h>
+#include "../ast/ast.h"
 
 int yylex();
 void yyerror(const char* s);
 %}
 
-%token TO ARITHMETIC_OP LOGICAL_OP
+%token ASSIGN TO ELIPSIS
 %token VECTOR PUSH_POP_FRONT_BACK
 %token DO UNTIL 
 %token IF THEN ELSE 
 %token FUNCTION RETURN APPLICATION
 
 %token <int_val> INTEGER_LITERAL
-%token <str_val> STRING_LITERAL BOOL_LITERAL TYPE
+%token <str_val> STRING_LITERAL BOOL_LITERAL TYPE ARITHMETIC_OP LOGICAL_OP NAME
 
-%right '='
+%right '=' ASSIGN
 %left ARITHMETIC_OP
 %left LOGICAL_OP
 
@@ -28,42 +29,113 @@ void yyerror(const char* s);
 %%
 
 program:
-    statements
+    function_declarations
+    ;
+
+function_declarations:
+    function_declarations function_declaration
+    | function_declaration
+    ;
+
+function_declaration:
+    FUNCTION TYPE NAME '(' parameter_list ')' statements {
+    }
+    ;
+
+parameter_list:
+    parameter_list ',' ELIPSIS {
+
+    }
+    | parameter_list ',' parameter {
+
+    }
+    | parameter {
+
+    }
+    | {
+
+    }
+    ;
+
+parameter:
+    NAME '=' INTEGER_LITERAL {
+
+    }
+    | NAME '=' BOOL_LITERAL {
+
+    }
+    | NAME '=' STRING_LITERAL {
+
+    } 
+    | NAME {
+
+    }
     ;
 
 statements:
-    statement
-    | statements statement
+    statements statement
+    | statement
     ;
 
 statement:
-    RETURN expression '\n'
-    | IF expression THEN statements ELSE statements '\n'
-    | DO statements UNTIL expression '\n'
-    | FUNCTION TYPE '(' ')' TO TYPE DO statements RETURN expression '\n'
-    | application '\n'
-    | expression '\n'
+    RETURN expression '\n' {
+
+    }
+    | IF expression THEN statements ELSE statement '\n' {
+
+    }
+    | DO statement UNTIL expression '\n' {
+
+    }
+    | FUNCTION TYPE '(' ')' TO TYPE DO statement RETURN expression '\n' {
+
+    }
+    | application '\n' {
+
+    }
+    | expression '\n' {
+
+    }
     ;
 
 expression:
     INTEGER_LITERAL {
         printf("%d\n", $1);
     }
-    | BOOL_LITERAL
-    | STRING_LITERAL
-    | TYPE
-    | expression ARITHMETIC_OP expression
-    | expression LOGICAL_OP expression
-    | '(' expression ')'
+    | BOOL_LITERAL {
+
+    }
+    | STRING_LITERAL {
+
+    }
+    | TYPE {
+
+    }
+    | expression ARITHMETIC_OP expression {
+
+    }
+    | expression LOGICAL_OP expression {
+
+    }
+    | '(' expression ')' {
+
+    }
+    |
     ;
 
 application:
-    APPLICATION '(' arguments ')'
+           APPLICATION '(' arguments ')' {
+
+    }
     ;
 
 arguments:
-    expression
-    | arguments ',' expression
+    expression {} {
+
+    }
+    | arguments ',' expression {
+
+    }
     ;
 
 %%

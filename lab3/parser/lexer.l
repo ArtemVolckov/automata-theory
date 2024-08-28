@@ -12,22 +12,25 @@ true|false|undefined          { yylval.str_val = strdup(yytext); return BOOL_LIT
 boolean|integer|string        { yylval.str_val = strdup(yytext); return TYPE; }
 "vector of"                   { return VECTOR; }
 (push|pop)[ \t ]+(front|back) { yylval.str_val = strdup(yytext); return PUSH_POP_FRONT_BACK; }
-to                            { }
-do                            { }
-until                         { }
-if                            { }
-then                          { }
-else                          { }
-"function of"                 { }
-return                        { }
-application                   { }
-"+"|"-"|"*"|"/"               { }
-"="                           { }
-"<>"|"<"|">"                  { }
-"("                           { }
-")"                           { }
-","                           { }
-"\n"                          { }
+to                            { return TO; }
+do                            { return DO; }
+until                         { return UNTIL; }
+if                            { return IF; }
+then                          { return THEN; }
+else                          { return ELSE; }
+"function of"                 { return FUNCTION; }
+return                        { return RETURN; }
+application                   { return APPLICATION; }
+"+"|"-"|"*"|"/"               { yylval.str_val = strdup(yytext); return ARITHMETIC_OP; }
+"<>"|"<"|">"                  { yylval.str_val = strdup(yytext); return LOGICAL_OP; }
+":="                          { return ASSIGN; }
+"="                           { return '='; }
+"("                           { return '('; }
+")"                           { return ')'; }
+","                           { return ','; }
+"\n"                          { return '\n'; }
+"..."                         { return ELIPSIS; }
 [ \t]+                        { }
+[a-zA-Z_][a-zA-Z0-9_]*        { yylval.str_val = strdup(yytext); return NAME; }
 .                             { fprintf(stderr, "Unknown expresion: %s\n", yytext); }
 %%

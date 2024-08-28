@@ -54,9 +54,9 @@ extern int yydebug;
     YYEOF = 0,                     /* "end of file"  */
     YYerror = 256,                 /* error  */
     YYUNDEF = 257,                 /* "invalid token"  */
-    TO = 258,                      /* TO  */
-    ARITHMETIC_OP = 259,           /* ARITHMETIC_OP  */
-    LOGICAL_OP = 260,              /* LOGICAL_OP  */
+    ASSIGN = 258,                  /* ASSIGN  */
+    TO = 259,                      /* TO  */
+    ELIPSIS = 260,                 /* ELIPSIS  */
     VECTOR = 261,                  /* VECTOR  */
     PUSH_POP_FRONT_BACK = 262,     /* PUSH_POP_FRONT_BACK  */
     DO = 263,                      /* DO  */
@@ -70,7 +70,10 @@ extern int yydebug;
     INTEGER_LITERAL = 271,         /* INTEGER_LITERAL  */
     STRING_LITERAL = 272,          /* STRING_LITERAL  */
     BOOL_LITERAL = 273,            /* BOOL_LITERAL  */
-    TYPE = 274                     /* TYPE  */
+    TYPE = 274,                    /* TYPE  */
+    ARITHMETIC_OP = 275,           /* ARITHMETIC_OP  */
+    LOGICAL_OP = 276,              /* LOGICAL_OP  */
+    NAME = 277                     /* NAME  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -84,7 +87,7 @@ union YYSTYPE
     int int_val;
     char* str_val;
 
-#line 88 "parser.tab.h"
+#line 91 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

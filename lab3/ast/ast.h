@@ -1,13 +1,13 @@
-#pragma once
+typedef enum NodeType {
+    FUNCTION_DECLARATION,
+    FUNCTION_CALL
+} NodeType;
 
 typedef struct Node {
-
+    NodeType type;
 } Node;
 
-class Ast {
-    private:
-        Node* root;
-    
-    public:
-
-};
+typedef struct Ast {
+    int counter;
+    Node** functions;
+} Ast;
