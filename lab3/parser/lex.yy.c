@@ -804,33 +804,33 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 YY_RULE_SETUP
 #line 9 "lexer.l"
-{ }
+{ yylval.int_val = atoi(yytext); return INTEGER_LITERAL; }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
 #line 10 "lexer.l"
-{ }
+{ yylval.str_val = strdup(yytext); return BOOL_LITERAL; }
 	YY_BREAK
 case 3:
 /* rule 3 can match eol */
 YY_RULE_SETUP
 #line 11 "lexer.l"
-{ }
+{ yylval.str_val = strdup(yytext); return STRING_LITERAL;}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
 #line 12 "lexer.l"
-{ }
+{ yylval.str_val = strdup(yytext); return TYPE; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
 #line 13 "lexer.l"
-{ }
+{ return VECTOR; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
 #line 14 "lexer.l"
-{ }
+{ yylval.str_val = strdup(yytext); return PUSH_POP_FRONT_BACK; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP

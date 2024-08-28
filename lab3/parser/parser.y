@@ -1,19 +1,23 @@
+%union {
+    int int_val;
+    char* str_val;
+}
+
 %{
-//#include <iostream>
-//#include <string>
-//#include <cstdlib>
 #include <stdio.h>
 
 int yylex();
 void yyerror(const char* s);
 %}
 
-%token INTEGER_LITERAL BOOL_LITERAL STRING_LITERAL
-%token TYPE TO ARITHMETIC_OP LOGICAL_OP
+%token TO ARITHMETIC_OP LOGICAL_OP
 %token VECTOR PUSH_POP_FRONT_BACK
 %token DO UNTIL 
 %token IF THEN ELSE 
 %token FUNCTION RETURN APPLICATION
+
+%token <int_val> INTEGER_LITERAL
+%token <str_val> STRING_LITERAL BOOL_LITERAL TYPE
 
 %right '='
 %left ARITHMETIC_OP
@@ -42,7 +46,9 @@ statement:
     ;
 
 expression:
-    INTEGER_LITERAL
+    INTEGER_LITERAL {
+        printf("%d\n", $1);
+    }
     | BOOL_LITERAL
     | STRING_LITERAL
     | TYPE

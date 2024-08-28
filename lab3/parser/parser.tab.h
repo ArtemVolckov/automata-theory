@@ -54,30 +54,40 @@ extern int yydebug;
     YYEOF = 0,                     /* "end of file"  */
     YYerror = 256,                 /* error  */
     YYUNDEF = 257,                 /* "invalid token"  */
-    INTEGER_LITERAL = 258,         /* INTEGER_LITERAL  */
-    BOOL_LITERAL = 259,            /* BOOL_LITERAL  */
-    STRING_LITERAL = 260,          /* STRING_LITERAL  */
-    TYPE = 261,                    /* TYPE  */
-    TO = 262,                      /* TO  */
-    ARITHMETIC_OP = 263,           /* ARITHMETIC_OP  */
-    LOGICAL_OP = 264,              /* LOGICAL_OP  */
-    VECTOR = 265,                  /* VECTOR  */
-    PUSH_POP_FRONT_BACK = 266,     /* PUSH_POP_FRONT_BACK  */
-    DO = 267,                      /* DO  */
-    UNTIL = 268,                   /* UNTIL  */
-    IF = 269,                      /* IF  */
-    THEN = 270,                    /* THEN  */
-    ELSE = 271,                    /* ELSE  */
-    FUNCTION = 272,                /* FUNCTION  */
-    RETURN = 273,                  /* RETURN  */
-    APPLICATION = 274              /* APPLICATION  */
+    TO = 258,                      /* TO  */
+    ARITHMETIC_OP = 259,           /* ARITHMETIC_OP  */
+    LOGICAL_OP = 260,              /* LOGICAL_OP  */
+    VECTOR = 261,                  /* VECTOR  */
+    PUSH_POP_FRONT_BACK = 262,     /* PUSH_POP_FRONT_BACK  */
+    DO = 263,                      /* DO  */
+    UNTIL = 264,                   /* UNTIL  */
+    IF = 265,                      /* IF  */
+    THEN = 266,                    /* THEN  */
+    ELSE = 267,                    /* ELSE  */
+    FUNCTION = 268,                /* FUNCTION  */
+    RETURN = 269,                  /* RETURN  */
+    APPLICATION = 270,             /* APPLICATION  */
+    INTEGER_LITERAL = 271,         /* INTEGER_LITERAL  */
+    STRING_LITERAL = 272,          /* STRING_LITERAL  */
+    BOOL_LITERAL = 273,            /* BOOL_LITERAL  */
+    TYPE = 274                     /* TYPE  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef int YYSTYPE;
+union YYSTYPE
+{
+#line 1 "parser.y"
+
+    int int_val;
+    char* str_val;
+
+#line 88 "parser.tab.h"
+
+};
+typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif
