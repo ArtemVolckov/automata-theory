@@ -58,19 +58,19 @@ extern int yydebug;
     BOOL_LITERAL = 259,            /* BOOL_LITERAL  */
     STRING_LITERAL = 260,          /* STRING_LITERAL  */
     TYPE = 261,                    /* TYPE  */
-    VECTOR = 262,                  /* VECTOR  */
-    PUSH_POP_FRONT_BACK = 263,     /* PUSH_POP_FRONT_BACK  */
-    TO = 264,                      /* TO  */
-    DO = 265,                      /* DO  */
-    UNTIL = 266,                   /* UNTIL  */
-    IF = 267,                      /* IF  */
-    THEN = 268,                    /* THEN  */
-    ELSE = 269,                    /* ELSE  */
-    FUNCTION = 270,                /* FUNCTION  */
-    RETURN = 271,                  /* RETURN  */
-    APPLICATION = 272,             /* APPLICATION  */
-    ARITHMETIC_OP = 273,           /* ARITHMETIC_OP  */
-    LOGICAL_OP = 274               /* LOGICAL_OP  */
+    TO = 262,                      /* TO  */
+    ARITHMETIC_OP = 263,           /* ARITHMETIC_OP  */
+    LOGICAL_OP = 264,              /* LOGICAL_OP  */
+    VECTOR = 265,                  /* VECTOR  */
+    PUSH_POP_FRONT_BACK = 266,     /* PUSH_POP_FRONT_BACK  */
+    DO = 267,                      /* DO  */
+    UNTIL = 268,                   /* UNTIL  */
+    IF = 269,                      /* IF  */
+    THEN = 270,                    /* THEN  */
+    ELSE = 271,                    /* ELSE  */
+    FUNCTION = 272,                /* FUNCTION  */
+    RETURN = 273,                  /* RETURN  */
+    APPLICATION = 274              /* APPLICATION  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif

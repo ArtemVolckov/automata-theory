@@ -1,5 +1,6 @@
+#line 2 "lex.yy.c"
 
-#line 3 "lex.yy.c"
+#line 4 "lex.yy.c"
 
 #define  YY_INT_ALIGNED short int
 
@@ -322,6 +323,9 @@ void yyfree ( void *  );
 #define YY_AT_BOL() (YY_CURRENT_BUFFER_LVALUE->yy_at_bol)
 
 /* Begin user sect3 */
+
+#define yywrap() (/*CONSTCOND*/1)
+#define YY_SKIP_YYWRAP
 typedef flex_uint8_t YY_CHAR;
 
 FILE *yyin = NULL, *yyout = NULL;
@@ -518,13 +522,10 @@ int yy_flex_debug = 0;
 char *yytext;
 #line 1 "lexer.l"
 #line 2 "lexer.l"
-
-#include <iostream>
-#include <string>
-#include <string_view>
-
-#line 527 "lex.yy.c"
+#include <stdio.h>
+#include "parser.tab.h"
 #line 528 "lex.yy.c"
+#line 529 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -741,8 +742,7 @@ YY_DECL
 		}
 
 	{
-#line 9 "lexer.l"
-
+#line 8 "lexer.l"
 
 #line 748 "lex.yy.c"
 
@@ -803,129 +803,129 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 11 "lexer.l"
-{ yylval.int_val = atoi(yytext); return INTEGER_LITERAL; }
+#line 9 "lexer.l"
+{ }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 12 "lexer.l"
-{ yylval.str_val = yytext; return BOOL_LITERAL; }
+#line 10 "lexer.l"
+{ }
 	YY_BREAK
 case 3:
 /* rule 3 can match eol */
 YY_RULE_SETUP
-#line 13 "lexer.l"
-{ std::string tmp_str(yytext); yylval.str_val = tmp_str.substr(1, tmp_str.length() - 2); return STRING_LITERAL; }
+#line 11 "lexer.l"
+{ }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 14 "lexer.l"
-{ yylval.str_val = yytext; return TYPE; }
+#line 12 "lexer.l"
+{ }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 15 "lexer.l"
-{ return VECTOR; }
+#line 13 "lexer.l"
+{ }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 16 "lexer.l"
-{ yylval.str_val = yytext; return PUSH_POP_FRONT_BACK }
+#line 14 "lexer.l"
+{ }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 17 "lexer.l"
-{ return TO }
+#line 15 "lexer.l"
+{ }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 18 "lexer.l"
-{ return DO; }
+#line 16 "lexer.l"
+{ }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 19 "lexer.l"
-{ return UNTIL; }
+#line 17 "lexer.l"
+{ }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 20 "lexer.l"
-{ return IF; }
+#line 18 "lexer.l"
+{ }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 21 "lexer.l"
-{ return THEN; }
+#line 19 "lexer.l"
+{ }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 22 "lexer.l"
-{ return ELSE; }
+#line 20 "lexer.l"
+{ }
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 23 "lexer.l"
-{ return FUNCTION; }
+#line 21 "lexer.l"
+{ }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 24 "lexer.l"
-{ return RETURN; }
+#line 22 "lexer.l"
+{ }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 25 "lexer.l"
-{ return APPLICATION; }
+#line 23 "lexer.l"
+{ }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 26 "lexer.l"
-{ yylval.str_val = yytext; return ARITHMETIC_OP; }
+#line 24 "lexer.l"
+{ }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 27 "lexer.l"
-{ return '='; }
+#line 25 "lexer.l"
+{ }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 28 "lexer.l"
-{ yylval.str_val = yytext; return LOGICAL_OP; }
+#line 26 "lexer.l"
+{ }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 29 "lexer.l"
-{ return '('; }
+#line 27 "lexer.l"
+{ }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 30 "lexer.l"
-{ return ')'; }
+#line 28 "lexer.l"
+{ }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 31 "lexer.l"
-{ return ','; }
+#line 29 "lexer.l"
+{ }
 	YY_BREAK
 case 22:
 /* rule 22 can match eol */
 YY_RULE_SETUP
-#line 32 "lexer.l"
-{ return '\n' }
+#line 30 "lexer.l"
+{ }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 33 "lexer.l"
-{}
+#line 31 "lexer.l"
+{ }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 34 "lexer.l"
-{ std::cout << "Unknown expression: '" << yytext << "'" << std::endl; }
+#line 32 "lexer.l"
+{ fprintf(stderr, "Unknown expresion: %s\n", yytext); }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 36 "lexer.l"
+#line 33 "lexer.l"
 ECHO;
 	YY_BREAK
 #line 932 "lex.yy.c"
@@ -1933,15 +1933,6 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 36 "lexer.l"
+#line 33 "lexer.l"
 
-
-void yyerror(std::string_view err_msg) {
-    std::cerr << "Lexical error: " << err_msg << std::endl;
-}
-
-int main() {
-    yylex(); 
-    return 0;
-}
 

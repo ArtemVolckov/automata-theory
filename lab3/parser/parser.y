@@ -1,30 +1,21 @@
 %{
-#include <iostream>
-#include <string>
-#include <cstdlib>
+//#include <iostream>
+//#include <string>
+//#include <cstdlib>
+#include <stdio.h>
 
-typedef struct value {
-    bool is_defined;
-    bool bool_val;
-    int int_val;
-    std::string str_val;
-} value;
-
-#define YYSTYPE value
-
-void yyerror(const char *s);
-int yylex(void);
-
+int yylex();
+void yyerror(const char* s);
 %}
 
-%token INTEGER_LITERAL BOOL_LITERAL STRING_LITERAL TYPE VECTOR PUSH_POP_FRONT_BACK
-%token TO DO UNTIL IF THEN ELSE FUNCTION RETURN APPLICATION
-%token ARITHMETIC_OP LOGICAL_OP
+%token INTEGER_LITERAL BOOL_LITERAL STRING_LITERAL
+%token TYPE TO ARITHMETIC_OP LOGICAL_OP
+%token VECTOR PUSH_POP_FRONT_BACK
+%token DO UNTIL 
+%token IF THEN ELSE 
+%token FUNCTION RETURN APPLICATION
 
-%left ELSE
-%left THEN
-%left IF
-%left '='
+%right '='
 %left ARITHMETIC_OP
 %left LOGICAL_OP
 
@@ -71,10 +62,16 @@ arguments:
 
 %%
 
-void yyerror(const char *s) {
-    std::cerr << "Syntax error: " << s << std::endl;
+void yyerror(const char* s) {
+    fprintf(stderr, "%s\n", s);
 }
 
 int main() {
-    return yyparse();
+    if (yyparse() == 0)
+        printf("Parsing completed successfully.\n");
+    else {
+        fprintf(stderr, "Parsing failed.\n");
+        return 1;
+    }
+    return 0;
 }
