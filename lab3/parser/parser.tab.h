@@ -54,43 +54,32 @@ extern int yydebug;
     YYEOF = 0,                     /* "end of file"  */
     YYerror = 256,                 /* error  */
     YYUNDEF = 257,                 /* "invalid token"  */
-    ASSIGN = 258,                  /* ASSIGN  */
-    TO = 259,                      /* TO  */
-    ELIPSIS = 260,                 /* ELIPSIS  */
-    VECTOR = 261,                  /* VECTOR  */
-    PUSH_POP_FRONT_BACK = 262,     /* PUSH_POP_FRONT_BACK  */
-    DO = 263,                      /* DO  */
-    UNTIL = 264,                   /* UNTIL  */
-    IF = 265,                      /* IF  */
-    THEN = 266,                    /* THEN  */
-    ELSE = 267,                    /* ELSE  */
-    FUNCTION = 268,                /* FUNCTION  */
-    RETURN = 269,                  /* RETURN  */
-    APPLICATION = 270,             /* APPLICATION  */
-    INTEGER_LITERAL = 271,         /* INTEGER_LITERAL  */
-    STRING_LITERAL = 272,          /* STRING_LITERAL  */
-    BOOL_LITERAL = 273,            /* BOOL_LITERAL  */
-    TYPE = 274,                    /* TYPE  */
-    ARITHMETIC_OP = 275,           /* ARITHMETIC_OP  */
-    LOGICAL_OP = 276,              /* LOGICAL_OP  */
-    NAME = 277                     /* NAME  */
+    INTEGER_LITERAL = 258,         /* INTEGER_LITERAL  */
+    STRING_LITERAL = 259,          /* STRING_LITERAL  */
+    BOOL_LITERAL = 260,            /* BOOL_LITERAL  */
+    NAME = 261,                    /* NAME  */
+    ASSIGN = 262,                  /* ASSIGN  */
+    TO = 263,                      /* TO  */
+    ELIPSIS = 264,                 /* ELIPSIS  */
+    TYPE = 265,                    /* TYPE  */
+    ARITHMETIC_OP = 266,           /* ARITHMETIC_OP  */
+    LOGICAL_OP = 267,              /* LOGICAL_OP  */
+    VECTOR = 268,                  /* VECTOR  */
+    PUSH_POP_FRONT_BACK = 269,     /* PUSH_POP_FRONT_BACK  */
+    DO = 270,                      /* DO  */
+    UNTIL = 271,                   /* UNTIL  */
+    IF = 272,                      /* IF  */
+    THEN = 273,                    /* THEN  */
+    ELSE = 274,                    /* ELSE  */
+    FUNCTION = 275,                /* FUNCTION  */
+    RETURN = 276                   /* RETURN  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-union YYSTYPE
-{
-#line 1 "parser.y"
-
-    int int_val;
-    char* str_val;
-
-#line 91 "parser.tab.h"
-
-};
-typedef union YYSTYPE YYSTYPE;
+typedef int YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif

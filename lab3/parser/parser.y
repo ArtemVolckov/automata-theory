@@ -1,45 +1,52 @@
-%union {
-    int int_val;
-    char* str_val;
-}
-
 %{
-#include <stdio.h>
-#include "../ast/ast.h"
+#include <iostream>
+#include <string>
+#include "../ast/ast.hpp"
+
+struct Value {
+    int int_val;
+    std::string str_val;
+};
+
+#define YYSTYPE Value
 
 int yylex();
 void yyerror(const char* s);
 %}
 
-%token ASSIGN TO ELIPSIS
+%token INTEGER_LITERAL STRING_LITERAL BOOL_LITERAL NAME
+%token ASSIGN TO ELIPSIS TYPE ARITHMETIC_OP LOGICAL_OP
 %token VECTOR PUSH_POP_FRONT_BACK
 %token DO UNTIL 
 %token IF THEN ELSE 
-%token FUNCTION RETURN APPLICATION
-
-%token <int_val> INTEGER_LITERAL
-%token <str_val> STRING_LITERAL BOOL_LITERAL TYPE ARITHMETIC_OP LOGICAL_OP NAME
+%token FUNCTION RETURN
 
 %right '=' ASSIGN
 %left ARITHMETIC_OP
 %left LOGICAL_OP
 
 %nonassoc '(' ')'
+%nonassoc '[' ']'
 
 %%
-
 program:
     function_declarations
     ;
 
 function_declarations:
-    function_declarations function_declaration
-    | function_declaration
+    function_declarations function_declaration {
+
+    }
+    | function_declaration {
+
+    }
     ;
 
 function_declaration:
-    FUNCTION TYPE NAME '(' parameter_list ')' statements {
+    FUNCTION TYPE NAME '(' parameter_list ')' '\n' statements {
+
     }
+    | '\n'    
     ;
 
 parameter_list:
@@ -73,24 +80,28 @@ parameter:
     ;
 
 statements:
-    statements statement
-    | statement
+    statements statement '\n' {
+
+    }
+    | statement '\n' {
+
+    }
     ;
 
 statement:
-    RETURN expression '\n' {
+    TYPE variables_list '\n' {
 
     }
-    | IF expression THEN statements ELSE statement '\n' {
+    | VECTOR TYPE vector_variables_list '\n' {
 
     }
-    | DO statement UNTIL expression '\n' {
+    | RETURN expression '\n' {
 
     }
-    | FUNCTION TYPE '(' ')' TO TYPE DO statement RETURN expression '\n' {
+    | IF expression THEN statements ELSE statements {
 
     }
-    | application '\n' {
+    | DO statements UNTIL expression '\n' {
 
     }
     | expression '\n' {
@@ -98,9 +109,48 @@ statement:
     }
     ;
 
+variables_list:
+    variables_list ',' variable {
+
+    }
+    | variable {
+
+    }
+    ;
+
+variable:
+    NAME ASSIGN INTEGER_LITERAL {
+
+    }
+    | NAME ASSIGN BOOL_LITERAL {
+
+    }
+    | NAME ASSIGN STRING_LITERAL {
+
+    }
+    | NAME {
+
+    }
+    ;
+
+vector_variables_list:
+    vector_variables_list ',' vector_variable {
+
+    }
+    | vector_variable {
+
+    }
+    ;
+
+vector_variable:
+    NAME {
+
+    }
+    ;
+
 expression:
     INTEGER_LITERAL {
-        printf("%d\n", $1);
+        
     }
     | BOOL_LITERAL {
 
@@ -117,38 +167,18 @@ expression:
     | expression LOGICAL_OP expression {
 
     }
-    | '(' expression ')' {
-
-    }
-    |
     ;
-
-application:
-           APPLICATION '(' arguments ')' {
-
-    }
-    ;
-
-arguments:
-    expression {} {
-
-    }
-    | arguments ',' expression {
-
-    }
-    ;
-
 %%
 
 void yyerror(const char* s) {
-    fprintf(stderr, "%s\n", s);
+    std::cerr << s << std::endl;
 }
 
 int main() {
     if (yyparse() == 0)
-        printf("Parsing completed successfully.\n");
+        std::cout << "Parsing completed successfully." << std::endl;
     else {
-        fprintf(stderr, "Parsing failed.\n");
+        std::cerr << "Parsing failed." << std::endl;
         return 1;
     }
     return 0;

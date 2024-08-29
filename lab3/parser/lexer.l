@@ -1,5 +1,13 @@
 %{
-#include <stdio.h>
+#include <iostream>
+#include <string>
+
+struct Value {
+    int int_val;
+    std::string str_val;
+};
+#define YYSTYPE Value
+
 #include "parser.tab.h"
 %}
 
@@ -7,11 +15,13 @@
 
 %%
 -?[0-9]+                      { yylval.int_val = atoi(yytext); return INTEGER_LITERAL; }
-true|false|undefined          { yylval.str_val = strdup(yytext); return BOOL_LITERAL; }
-\"[^\"]*\"|\'[^\']*\'         { yylval.str_val = strdup(yytext); return STRING_LITERAL;}
-boolean|integer|string        { yylval.str_val = strdup(yytext); return TYPE; }
+true|false|undefined          { yylval.str_val = yytext; return BOOL_LITERAL; }
+\"[^\"]*\"|\'[^\']*\'         { std::string tmp_str = std::string(yytext); 
+                                yylval.str_val = tmp_str.substr(1, tmp_str.length() - 2); 
+                                return STRING_LITERAL;}
+boolean|integer|string        { yylval.str_val = yytext; return TYPE; }
 "vector of"                   { return VECTOR; }
-(push|pop)[ \t ]+(front|back) { yylval.str_val = strdup(yytext); return PUSH_POP_FRONT_BACK; }
+(push|pop)[ \t ]+(front|back) { yylval.str_val = yytext; return PUSH_POP_FRONT_BACK; }
 to                            { return TO; }
 do                            { return DO; }
 until                         { return UNTIL; }
@@ -20,17 +30,18 @@ then                          { return THEN; }
 else                          { return ELSE; }
 "function of"                 { return FUNCTION; }
 return                        { return RETURN; }
-application                   { return APPLICATION; }
-"+"|"-"|"*"|"/"               { yylval.str_val = strdup(yytext); return ARITHMETIC_OP; }
-"<>"|"<"|">"                  { yylval.str_val = strdup(yytext); return LOGICAL_OP; }
-":="                          { return ASSIGN; }
+"+"|"-"                       { yylval.str_val = yytext; return ARITHMETIC_OP; }
+"<>"|"<"|">"                  { yylval.str_val = yytext; return LOGICAL_OP; }
 "="                           { return '='; }
+":="                          { return ASSIGN; }
 "("                           { return '('; }
 ")"                           { return ')'; }
+"["                           { return '['; }
+"]"                           { return ']'; }
 ","                           { return ','; }
 "\n"                          { return '\n'; }
 "..."                         { return ELIPSIS; }
 [ \t]+                        { }
-[a-zA-Z_][a-zA-Z0-9_]*        { yylval.str_val = strdup(yytext); return NAME; }
-.                             { fprintf(stderr, "Unknown expresion: %s\n", yytext); }
+[a-zA-Z_][a-zA-Z0-9_]*        { yylval.str_val = yytext; return NAME; }
+.                             { std::cerr << "Unknown expresion: " << yytext << std::endl; }
 %%

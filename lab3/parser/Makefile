@@ -1,4 +1,4 @@
-CC = gcc
+CC = g++
 
 EXE = lab3
 
@@ -11,7 +11,7 @@ PARSER = parser.tab.c
 all: $(EXE)
 
 $(EXE): $(LEXER) $(PARSER) 
-	$(CC) -lfl $^ -o $@
+	$(CC)  $^ -o $@
 
 $(LEXER): $(LEXER_SRC)
 	flex -o $@ $<

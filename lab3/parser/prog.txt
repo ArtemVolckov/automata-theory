@@ -1,1 +1,1 @@
-function of integer main ()
+function of integer main (  )
