@@ -73,17 +73,27 @@
 #include <string>
 #include "../ast/ast.hpp"
 
+Ast ast;
+
 struct Value {
     int int_val;
     std::string str_val;
+    // pair.fist = variable name; pair.second = variable.value
+    std::vector<std::pair<std::variant<std::string, char>, std::variant<int, bool, std::string, char>>> variables;
+    bool is_elipsis, is_int_val, is_bool_val, is_str_val, is_variable, is_vector;
+    std::pair<std::variant<int, bool, std::string>, std::variant<int, bool, std::string, char>> logical_op_variables;
+    std::string logical_op;
+    Node* new_node;
+    std::vector<Node*> statements;
+    std::vector<std::vector<Node*>> statements_list;
 };
 
 #define YYSTYPE Value
 
 int yylex();
-void yyerror(const char* s);
+void yyerror(std::string err_msg);
 
-#line 87 "parser.tab.c"
+#line 97 "parser.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -143,16 +153,22 @@ enum yysymbol_kind_t
   YYSYMBOL_YYACCEPT = 29,                  /* $accept  */
   YYSYMBOL_program = 30,                   /* program  */
   YYSYMBOL_function_declarations = 31,     /* function_declarations  */
-  YYSYMBOL_function_declaration = 32,      /* function_declaration  */
-  YYSYMBOL_parameter_list = 33,            /* parameter_list  */
-  YYSYMBOL_parameter = 34,                 /* parameter  */
-  YYSYMBOL_statements = 35,                /* statements  */
-  YYSYMBOL_statement = 36,                 /* statement  */
-  YYSYMBOL_variables_list = 37,            /* variables_list  */
-  YYSYMBOL_variable = 38,                  /* variable  */
-  YYSYMBOL_vector_variables_list = 39,     /* vector_variables_list  */
-  YYSYMBOL_vector_variable = 40,           /* vector_variable  */
-  YYSYMBOL_expression = 41                 /* expression  */
+  YYSYMBOL_32_1 = 32,                      /* $@1  */
+  YYSYMBOL_function_declaration = 33,      /* function_declaration  */
+  YYSYMBOL_parameter_list = 34,            /* parameter_list  */
+  YYSYMBOL_parameter = 35,                 /* parameter  */
+  YYSYMBOL_statements = 36,                /* statements  */
+  YYSYMBOL_statement = 37,                 /* statement  */
+  YYSYMBOL_func_call_parameter_list = 38,  /* func_call_parameter_list  */
+  YYSYMBOL_func_call_parameter = 39,       /* func_call_parameter  */
+  YYSYMBOL_else_list = 40,                 /* else_list  */
+  YYSYMBOL_variables_list = 41,            /* variables_list  */
+  YYSYMBOL_variable = 42,                  /* variable  */
+  YYSYMBOL_vector_variables_list = 43,     /* vector_variables_list  */
+  YYSYMBOL_vector_variable = 44,           /* vector_variable  */
+  YYSYMBOL_bool_expression = 45,           /* bool_expression  */
+  YYSYMBOL_expression = 46,                /* expression  */
+  YYSYMBOL_47_2 = 47                       /* @2  */
 };
 typedef enum yysymbol_kind_t yysymbol_kind_t;
 
@@ -480,16 +496,16 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  7
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   87
+#define YYLAST   118
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  29
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  13
+#define YYNNTS  19
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  37
+#define YYNRULES  60
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  71
+#define YYNSTATES  111
 
 /* YYMAXUTOK -- Last valid token kind.  */
 #define YYMAXUTOK   276
@@ -538,12 +554,15 @@ static const yytype_int8 yytranslate[] =
 
 #if YYDEBUG
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
-static const yytype_uint8 yyrline[] =
+static const yytype_int16 yyrline[] =
 {
-       0,    33,    33,    37,    40,    46,    49,    53,    56,    59,
-      62,    68,    71,    74,    77,    83,    86,    92,    95,    98,
-     101,   104,   107,   113,   116,   122,   125,   128,   131,   137,
-     140,   146,   152,   155,   158,   161,   164,   167
+       0,    42,    42,    43,    47,    47,    53,    56,    59,    63,
+      69,    74,    79,    82,    86,    89,    96,    99,   105,   110,
+     116,   119,   122,   125,   128,   131,   134,   137,   140,   143,
+     149,   154,   157,   161,   164,   171,   174,   177,   184,   190,
+     196,   199,   205,   210,   216,   219,   226,   229,   235,   240,
+     246,   252,   259,   284,   311,   312,   312,   363,   367,   371,
+     375
 };
 #endif
 
@@ -564,9 +583,11 @@ static const char *const yytname[] =
   "TYPE", "ARITHMETIC_OP", "LOGICAL_OP", "VECTOR", "PUSH_POP_FRONT_BACK",
   "DO", "UNTIL", "IF", "THEN", "ELSE", "FUNCTION", "RETURN", "'='", "'('",
   "')'", "'['", "']'", "'\\n'", "','", "$accept", "program",
-  "function_declarations", "function_declaration", "parameter_list",
-  "parameter", "statements", "statement", "variables_list", "variable",
-  "vector_variables_list", "vector_variable", "expression", YY_NULLPTR
+  "function_declarations", "$@1", "function_declaration", "parameter_list",
+  "parameter", "statements", "statement", "func_call_parameter_list",
+  "func_call_parameter", "else_list", "variables_list", "variable",
+  "vector_variables_list", "vector_variable", "bool_expression",
+  "expression", "@2", YY_NULLPTR
 };
 
 static const char *
@@ -576,12 +597,12 @@ yysymbol_name (yysymbol_kind_t yysymbol)
 }
 #endif
 
-#define YYPACT_NINF (-31)
+#define YYPACT_NINF (-33)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
 
-#define YYTABLE_NINF (-1)
+#define YYTABLE_NINF (-52)
 
 #define yytable_value_is_error(Yyn) \
   0
@@ -590,14 +611,18 @@ yysymbol_name (yysymbol_kind_t yysymbol)
    STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-     -18,    -3,   -31,    25,   -18,   -31,    24,   -31,   -31,    12,
-      39,    27,    19,   -31,    71,    37,    62,   -31,   -31,   -31,
-      48,   -31,   -31,   -31,   -31,   -31,    64,    44,    48,    52,
-      52,    48,    45,    -6,    73,    10,   -31,    75,     7,   -31,
-      55,     2,    56,   -31,    52,    52,   -31,    74,   -31,    64,
-     -31,    32,   -31,    52,    48,   -31,   -31,    70,   -31,   -31,
-     -31,   -31,   -31,   -31,    75,     4,    29,   -31,   -31,    48,
-      48
+       1,     5,   -33,    18,     4,    22,    55,   -33,    36,   -33,
+      46,   -33,    65,     1,    51,     6,   -33,     4,    62,    69,
+       7,    36,   -33,   -33,   -33,    47,   -33,   -33,    -3,    91,
+      89,    47,    73,    77,    47,   -33,    77,    41,    77,    81,
+      93,    11,   -33,    92,    16,   -33,   -33,    -8,   -33,    83,
+      24,   -33,   -10,   -33,    -4,    75,    76,    -2,   -33,   -33,
+     -33,    82,    31,   -33,    85,   -33,    91,   -33,    67,   -33,
+      73,    47,    77,    77,    77,   -33,   -33,   -33,   -33,   -33,
+      88,    78,    81,   -33,   -33,   -33,   -33,   -33,    92,    79,
+      35,    96,    96,    96,   -33,   -33,   -33,   -33,   -33,   -33,
+     -33,    47,    90,   102,    47,    47,    86,    47,   107,    87,
+     -33
 };
 
 /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -605,28 +630,32 @@ static const yytype_int8 yypact[] =
    means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
-       0,     0,     6,     0,     2,     4,     0,     1,     3,     0,
-      10,    14,     0,     9,     0,     0,     0,    11,    13,    12,
-       0,     7,     8,    32,    34,    33,    35,     0,     0,     0,
-       0,     5,     0,     0,    28,     0,    24,     0,     0,    35,
-       0,     0,     0,    16,     0,     0,    22,     0,    17,     0,
-      31,     0,    30,     0,     0,    19,    15,    36,    37,    25,
-      27,    26,    23,    18,     0,     0,     0,    29,    21,     0,
-      20
+       2,     0,     8,     0,     3,     7,     0,     1,     0,     6,
+       0,     4,    13,     0,    17,     0,    12,     0,     0,     0,
+       0,     5,    14,    16,    15,     0,    10,    11,     0,     0,
+       0,     0,    54,    54,     9,    19,    54,     0,    54,    32,
+      47,     0,    43,     0,     0,    57,    59,    58,    60,     0,
+       0,    58,     0,    18,     0,     0,     0,     0,    36,    38,
+      37,     0,     0,    31,     0,    20,     0,    50,     0,    49,
+      54,     0,    54,    54,    54,    29,    22,    25,    24,    23,
+       0,     0,     0,    44,    46,    45,    42,    21,     0,     0,
+      41,    55,    52,    53,    33,    35,    34,    28,    30,    48,
+      27,     0,    26,     0,    40,     0,     0,    39,     0,     0,
+      56
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -31,   -31,   -31,    80,   -31,    69,   -28,   -30,   -31,    38,
-     -31,    22,   -26
+     -33,   -33,    99,   -33,    10,   -33,    94,   -31,   -32,   -33,
+      33,   -33,   -33,    50,   -33,    29,    48,   -30,   -33
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-       0,     3,     4,     5,    12,    13,    31,    32,    35,    36,
-      51,    52,    33
+       0,     3,     4,    13,     5,    15,    16,    34,    35,    62,
+      63,   102,    41,    42,    68,    69,    49,    50,   103
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -634,60 +663,76 @@ static const yytype_int8 yydefgoto[] =
    number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-      38,    42,     1,    40,    41,    44,    45,     6,    42,     2,
-      23,    24,    25,    44,    45,    44,    45,    26,    57,    58,
-      27,    46,    28,    53,    29,     7,    66,    65,    30,    55,
-       9,    68,    23,    24,    25,    10,    42,    48,    49,    26,
-      42,    70,    27,    15,    28,    11,    29,    16,    69,    14,
-      30,    23,    24,    25,    37,    23,    24,    25,    26,    63,
-      64,    27,    39,    28,    20,    29,    44,    45,    11,    30,
-      34,    21,    43,    54,    17,    18,    19,    59,    60,    61,
-      47,    50,    45,    56,     8,    22,    67,    62
+      44,    72,    53,    52,    36,    37,    54,    72,    57,    72,
+     -51,    38,    53,    14,     8,     6,    26,    75,     7,   -51,
+      39,     1,    28,    76,     1,    79,    29,    21,     2,    30,
+      19,    31,    70,    32,    20,    72,    73,    33,    65,    66,
+      90,    28,    91,    92,    93,    29,    74,    55,    30,     9,
+      31,    56,    32,    28,   101,    81,    33,    29,    53,    82,
+      30,    10,    31,    11,    32,    22,    23,    24,    33,    12,
+     104,    14,    53,    18,   107,    53,    45,    46,    47,    48,
+      45,    46,    51,    48,    58,    59,    60,    61,    83,    84,
+      85,    94,    95,    96,    87,    88,    25,    40,    67,    43,
+      64,    71,    77,    78,    80,    97,   100,    72,   106,   105,
+     109,   108,    17,   110,    27,    98,    86,    99,    89
 };
 
 static const yytype_int8 yycheck[] =
 {
-      28,    31,    20,    29,    30,    11,    12,    10,    38,    27,
-       3,     4,     5,    11,    12,    11,    12,    10,    44,    45,
-      13,    27,    15,    16,    17,     0,    54,    53,    21,    27,
-       6,    27,     3,     4,     5,    23,    66,    27,    28,    10,
-      70,    69,    13,    24,    15,     6,    17,    28,    19,    22,
-      21,     3,     4,     5,    10,     3,     4,     5,    10,    27,
-      28,    13,    10,    15,    27,    17,    11,    12,     6,    21,
-       6,     9,    27,    18,     3,     4,     5,     3,     4,     5,
-       7,     6,    12,    27,     4,    16,    64,    49
+      31,    11,    34,    33,     7,     8,    36,    11,    38,    11,
+      18,    14,    44,     6,     4,    10,     9,    27,     0,    27,
+      23,    20,     6,    27,    20,    27,    10,    17,    27,    13,
+      24,    15,    16,    17,    28,    11,    12,    21,    27,    28,
+      71,     6,    72,    73,    74,    10,    22,     6,    13,    27,
+      15,    10,    17,     6,    19,    24,    21,    10,    90,    28,
+      13,     6,    15,    27,    17,     3,     4,     5,    21,    23,
+     101,     6,   104,    22,   105,   107,     3,     4,     5,     6,
+       3,     4,     5,     6,     3,     4,     5,     6,     3,     4,
+       5,     3,     4,     5,    27,    28,    27,     6,     6,    10,
+       7,    18,    27,    27,    22,    27,    27,    11,     6,    19,
+       3,    25,    13,    26,    20,    82,    66,    88,    70
 };
 
 /* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
    state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,    20,    27,    30,    31,    32,    10,     0,    32,     6,
-      23,     6,    33,    34,    22,    24,    28,     3,     4,     5,
-      27,     9,    34,     3,     4,     5,    10,    13,    15,    17,
-      21,    35,    36,    41,     6,    37,    38,    10,    35,    10,
-      41,    41,    36,    27,    11,    12,    27,     7,    27,    28,
-       6,    39,    40,    16,    18,    27,    27,    41,    41,     3,
-       4,     5,    38,    27,    28,    41,    35,    40,    27,    19,
-      35
+       0,    20,    27,    30,    31,    33,    10,     0,    33,    27,
+       6,    27,    23,    32,     6,    34,    35,    31,    22,    24,
+      28,    33,     3,     4,     5,    27,     9,    35,     6,    10,
+      13,    15,    17,    21,    36,    37,     7,     8,    14,    23,
+       6,    41,    42,    10,    36,     3,     4,     5,     6,    45,
+      46,     5,    46,    37,    46,     6,    10,    46,     3,     4,
+       5,     6,    38,    39,     7,    27,    28,     6,    43,    44,
+      16,    18,    11,    12,    22,    27,    27,    27,    27,    27,
+      22,    24,    28,     3,     4,     5,    42,    27,    28,    45,
+      36,    46,    46,    46,     3,     4,     5,    27,    39,    44,
+      27,    19,    40,    47,    36,    19,     6,    36,    25,     3,
+      26
 };
 
 /* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr1[] =
 {
-       0,    29,    30,    31,    31,    32,    32,    33,    33,    33,
-      33,    34,    34,    34,    34,    35,    35,    36,    36,    36,
-      36,    36,    36,    37,    37,    38,    38,    38,    38,    39,
-      39,    40,    41,    41,    41,    41,    41,    41
+       0,    29,    30,    30,    32,    31,    31,    31,    31,    33,
+      34,    34,    34,    34,    35,    35,    35,    35,    36,    36,
+      37,    37,    37,    37,    37,    37,    37,    37,    37,    37,
+      38,    38,    38,    39,    39,    39,    39,    39,    39,    40,
+      40,    40,    41,    41,    42,    42,    42,    42,    43,    43,
+      44,    45,    45,    45,    46,    47,    46,    46,    46,    46,
+      46
 };
 
 /* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr2[] =
 {
-       0,     2,     1,     2,     1,     8,     1,     3,     3,     1,
-       0,     3,     3,     3,     1,     3,     2,     3,     4,     3,
-       6,     5,     2,     3,     1,     3,     3,     3,     1,     3,
-       1,     1,     1,     1,     1,     1,     3,     3
+       0,     2,     0,     1,     0,     6,     2,     1,     1,     8,
+       3,     3,     1,     0,     3,     3,     3,     1,     2,     1,
+       3,     4,     4,     4,     4,     4,     5,     5,     5,     3,
+       3,     1,     0,     3,     3,     3,     1,     1,     1,     3,
+       2,     0,     3,     1,     3,     3,     3,     1,     3,     1,
+       1,     1,     3,     3,     0,     0,     8,     1,     1,     1,
+       1
 };
 
 
@@ -1150,280 +1195,560 @@ yyreduce:
   YY_REDUCE_PRINT (yyn);
   switch (yyn)
     {
-  case 3: /* function_declarations: function_declarations function_declaration  */
-#line 37 "parser.y"
+  case 4: /* $@1: %empty  */
+#line 47 "parser.y"
+                                                    {
+        ast.functions.push_back(yyvsp[-1].new_node);
+    }
+#line 1204 "parser.tab.c"
+    break;
+
+  case 5: /* function_declarations: function_declarations function_declaration '\n' $@1 function_declarations function_declaration  */
+#line 50 "parser.y"
                                                {
-
+        ast.functions.push_back(yyvsp[-4].new_node);
     }
-#line 1159 "parser.tab.c"
+#line 1212 "parser.tab.c"
     break;
 
-  case 4: /* function_declarations: function_declaration  */
-#line 40 "parser.y"
-                           {
-
-    }
-#line 1167 "parser.tab.c"
-    break;
-
-  case 5: /* function_declaration: FUNCTION TYPE NAME '(' parameter_list ')' '\n' statements  */
-#line 46 "parser.y"
-                                                              {
-
-    }
-#line 1175 "parser.tab.c"
-    break;
-
-  case 7: /* parameter_list: parameter_list ',' ELIPSIS  */
+  case 6: /* function_declarations: function_declaration '\n'  */
 #line 53 "parser.y"
-                               {
-
+                                {
+        ast.functions.push_back(yyvsp[-1].new_node);
     }
-#line 1183 "parser.tab.c"
+#line 1220 "parser.tab.c"
     break;
 
-  case 8: /* parameter_list: parameter_list ',' parameter  */
+  case 7: /* function_declarations: function_declaration  */
 #line 56 "parser.y"
+                           {
+        ast.functions.push_back(yyvsp[0].new_node);
+    }
+#line 1228 "parser.tab.c"
+    break;
+
+  case 9: /* function_declaration: FUNCTION TYPE NAME '(' parameter_list ')' '\n' statements  */
+#line 63 "parser.y"
+                                                              {
+        yyval.new_node = new Node(NodeType::FUNCTION_DECLARATION, yyvsp[-6].str_val, yyvsp[-5].str_val, yyvsp[-3].variables, yyvsp[0].statements, yyvsp[-3].is_elipsis);
+    }
+#line 1236 "parser.tab.c"
+    break;
+
+  case 10: /* parameter_list: parameter_list ',' ELIPSIS  */
+#line 69 "parser.y"
+                               {
+        for (auto pair: yyvsp[-2].variables)
+            yyval.variables.push_back(pair);
+        yyval.is_elipsis = true;
+    }
+#line 1246 "parser.tab.c"
+    break;
+
+  case 11: /* parameter_list: parameter_list ',' parameter  */
+#line 74 "parser.y"
                                    {
-
+        for (auto pair: yyvsp[-2].variables)
+            yyval.variables.push_back(pair);
+        yyval.variables.push_back(yyvsp[0].variables.back());
     }
-#line 1191 "parser.tab.c"
+#line 1256 "parser.tab.c"
     break;
 
-  case 9: /* parameter_list: parameter  */
-#line 59 "parser.y"
+  case 12: /* parameter_list: parameter  */
+#line 79 "parser.y"
                 {
-
+        yyval.variables.push_back(yyvsp[0].variables.back());   
     }
-#line 1199 "parser.tab.c"
+#line 1264 "parser.tab.c"
     break;
 
-  case 10: /* parameter_list: %empty  */
-#line 62 "parser.y"
+  case 14: /* parameter: NAME '=' INTEGER_LITERAL  */
+#line 86 "parser.y"
+                             {
+        yyval.variables.push_back(std::make_pair(yyvsp[-2].str_val, yyvsp[0].int_val));
+    }
+#line 1272 "parser.tab.c"
+    break;
+
+  case 15: /* parameter: NAME '=' BOOL_LITERAL  */
+#line 89 "parser.y"
+                            {
+        bool bool_val = false;
+
+        if (yyvsp[0].str_val == "true")
+            bool_val = true;    
+        yyval.variables.push_back(std::make_pair(yyvsp[-2].str_val, bool_val));
+    }
+#line 1284 "parser.tab.c"
+    break;
+
+  case 16: /* parameter: NAME '=' STRING_LITERAL  */
+#line 96 "parser.y"
+                              {
+        yyval.variables.push_back(std::make_pair(yyvsp[-2].str_val, yyvsp[0].str_val));
+    }
+#line 1292 "parser.tab.c"
+    break;
+
+  case 17: /* parameter: NAME  */
+#line 99 "parser.y"
+           {
+        yyval.variables.push_back(std::make_pair(yyvsp[0].str_val, '\0'));
+    }
+#line 1300 "parser.tab.c"
+    break;
+
+  case 18: /* statements: statements statement  */
+#line 105 "parser.y"
+                         {
+        for (Node* new_node: yyvsp[-1].statements)
+            yyval.statements.push_back(new_node);
+        yyval.statements.push_back(yyvsp[0].new_node);    
+    }
+#line 1310 "parser.tab.c"
+    break;
+
+  case 19: /* statements: statement  */
+#line 110 "parser.y"
+                {
+        yyval.statements.push_back(yyvsp[0].new_node);
+    }
+#line 1318 "parser.tab.c"
+    break;
+
+  case 20: /* statement: TYPE variables_list '\n'  */
+#line 116 "parser.y"
+                             {
+        yyval.new_node = new Node(NodeType::VARIABLES_INIT, yyvsp[-2].str_val, yyvsp[-1].variables);
+    }
+#line 1326 "parser.tab.c"
+    break;
+
+  case 21: /* statement: VECTOR TYPE vector_variables_list '\n'  */
+#line 119 "parser.y"
+                                             {
+        yyval.new_node = new Node(yyvsp[-2].str_val, yyvsp[-1].variables, NodeType::VECTOR_INIT);
+    }
+#line 1334 "parser.tab.c"
+    break;
+
+  case 22: /* statement: NAME ASSIGN expression '\n'  */
+#line 122 "parser.y"
+                                  {
+        yyval.new_node = new Node(NodeType::ASSIGN, yyvsp[-3].str_val, yyvsp[-1].is_int_val, yyvsp[-1].is_bool_val, yyvsp[-1].is_str_val, yyvsp[-1].is_variable, yyvsp[-1].is_vector, yyvsp[-1].int_val, yyvsp[-1].str_val);
+    }
+#line 1342 "parser.tab.c"
+    break;
+
+  case 23: /* statement: NAME PUSH_POP_FRONT_BACK expression '\n'  */
+#line 125 "parser.y"
+                                               {
+        yyval.new_node = new Node(NodeType::PUSH_POP_FRONT_BACK, yyvsp[-3].str_val, yyvsp[-2].str_val, yyvsp[-1].is_int_val, yyvsp[-1].is_bool_val, yyvsp[-1].is_str_val, yyvsp[-1].is_variable, yyvsp[-1].is_vector, yyvsp[-1].int_val, yyvsp[-1].str_val);
+    }
+#line 1350 "parser.tab.c"
+    break;
+
+  case 24: /* statement: NAME TO TYPE '\n'  */
+#line 128 "parser.y"
+                        {
+        yyval.new_node = new Node(yyvsp[-3].str_val, NodeType::NAME_TO_TYPE, yyvsp[-1].str_val);
+    }
+#line 1358 "parser.tab.c"
+    break;
+
+  case 25: /* statement: NAME TO NAME '\n'  */
+#line 131 "parser.y"
+                        {
+        yyval.new_node = new Node(NodeType::NAME_TO_NAME, yyvsp[-3].str_val, yyvsp[-1].str_val);
+    }
+#line 1366 "parser.tab.c"
+    break;
+
+  case 26: /* statement: IF bool_expression THEN statements else_list  */
+#line 134 "parser.y"
+                                                   {
+        yyval.new_node = new Node(NodeType::IF, yyvsp[-3].logical_op_variables, yyvsp[-3].logical_op, yyvsp[-1].statements, yyvsp[0].statements_list); 
+    }
+#line 1374 "parser.tab.c"
+    break;
+
+  case 27: /* statement: DO statements UNTIL bool_expression '\n'  */
+#line 137 "parser.y"
+                                               {
+        yyval.new_node = new Node(NodeType::DO, yyvsp[-3].statements, yyvsp[-1].logical_op_variables, yyvsp[-1].logical_op); 
+    }
+#line 1382 "parser.tab.c"
+    break;
+
+  case 28: /* statement: NAME '(' func_call_parameter_list ')' '\n'  */
+#line 140 "parser.y"
+                                                 {
+        yyval.new_node = new Node(yyvsp[-4].str_val, NodeType::FUNCTION_CALL, yyvsp[-2].variables);
+    }
+#line 1390 "parser.tab.c"
+    break;
+
+  case 29: /* statement: RETURN expression '\n'  */
+#line 143 "parser.y"
+                             {
+        yyval.new_node = new Node(NodeType::RETURN, yyvsp[-1].is_int_val, yyvsp[-1].is_bool_val, yyvsp[-1].is_str_val, yyvsp[-1].is_variable, yyvsp[-1].is_vector, yyvsp[-1].int_val, yyvsp[-1].str_val);
+    }
+#line 1398 "parser.tab.c"
+    break;
+
+  case 30: /* func_call_parameter_list: func_call_parameter_list ',' func_call_parameter  */
+#line 149 "parser.y"
+                                                     {
+        for (auto pair: yyvsp[-2].variables)
+            yyval.variables.push_back(pair);
+        yyval.variables.push_back(yyvsp[0].variables.back());
+    }
+#line 1408 "parser.tab.c"
+    break;
+
+  case 31: /* func_call_parameter_list: func_call_parameter  */
+#line 154 "parser.y"
+                          {
+        yyval.variables.push_back(yyvsp[0].variables.back());   
+    }
+#line 1416 "parser.tab.c"
+    break;
+
+  case 33: /* func_call_parameter: NAME '=' INTEGER_LITERAL  */
+#line 161 "parser.y"
+                             {
+        yyval.variables.push_back(std::make_pair(yyvsp[-2].str_val, yyvsp[0].int_val));
+    }
+#line 1424 "parser.tab.c"
+    break;
+
+  case 34: /* func_call_parameter: NAME '=' BOOL_LITERAL  */
+#line 164 "parser.y"
+                            {
+        bool bool_val = false;
+
+        if (yyvsp[0].str_val == "true")
+            bool_val = true;    
+        yyval.variables.push_back(std::make_pair(yyvsp[-2].str_val, bool_val));
+    }
+#line 1436 "parser.tab.c"
+    break;
+
+  case 35: /* func_call_parameter: NAME '=' STRING_LITERAL  */
+#line 171 "parser.y"
+                              {
+        yyval.variables.push_back(std::make_pair(yyvsp[-2].str_val, yyvsp[0].str_val));
+    }
+#line 1444 "parser.tab.c"
+    break;
+
+  case 36: /* func_call_parameter: INTEGER_LITERAL  */
+#line 174 "parser.y"
+                      {
+        yyval.variables.push_back(std::make_pair('\0', yyvsp[0].int_val));
+    }
+#line 1452 "parser.tab.c"
+    break;
+
+  case 37: /* func_call_parameter: BOOL_LITERAL  */
+#line 177 "parser.y"
+                   {
+        bool bool_val = false;
+
+        if (yyvsp[0].str_val == "true")
+            bool_val = true;
+        yyval.variables.push_back(std::make_pair('\0', bool_val));
+    }
+#line 1464 "parser.tab.c"
+    break;
+
+  case 38: /* func_call_parameter: STRING_LITERAL  */
+#line 184 "parser.y"
+                     {
+        yyval.variables.push_back(std::make_pair('\0', yyvsp[0].str_val));
+    }
+#line 1472 "parser.tab.c"
+    break;
+
+  case 39: /* else_list: else_list ELSE statements  */
+#line 190 "parser.y"
+                              {
+        for (auto statements: yyvsp[-2].statements_list)
+            yyval.statements_list.push_back(statements);
+        yyval.statements_list.push_back(yyvsp[0].statements);
+
+    }
+#line 1483 "parser.tab.c"
+    break;
+
+  case 40: /* else_list: ELSE statements  */
+#line 196 "parser.y"
+                      {
+        yyval.statements_list.push_back(yyvsp[0].statements);
+    }
+#line 1491 "parser.tab.c"
+    break;
+
+  case 41: /* else_list: %empty  */
+#line 199 "parser.y"
       {
 
     }
-#line 1207 "parser.tab.c"
+#line 1499 "parser.tab.c"
     break;
 
-  case 11: /* parameter: NAME '=' INTEGER_LITERAL  */
-#line 68 "parser.y"
-                             {
-
-    }
-#line 1215 "parser.tab.c"
-    break;
-
-  case 12: /* parameter: NAME '=' BOOL_LITERAL  */
-#line 71 "parser.y"
-                            {
-
-    }
-#line 1223 "parser.tab.c"
-    break;
-
-  case 13: /* parameter: NAME '=' STRING_LITERAL  */
-#line 74 "parser.y"
-                              {
-
-    }
-#line 1231 "parser.tab.c"
-    break;
-
-  case 14: /* parameter: NAME  */
-#line 77 "parser.y"
-           {
-
-    }
-#line 1239 "parser.tab.c"
-    break;
-
-  case 15: /* statements: statements statement '\n'  */
-#line 83 "parser.y"
-                              {
-
-    }
-#line 1247 "parser.tab.c"
-    break;
-
-  case 16: /* statements: statement '\n'  */
-#line 86 "parser.y"
-                     {
-
-    }
-#line 1255 "parser.tab.c"
-    break;
-
-  case 17: /* statement: TYPE variables_list '\n'  */
-#line 92 "parser.y"
-                             {
-
-    }
-#line 1263 "parser.tab.c"
-    break;
-
-  case 18: /* statement: VECTOR TYPE vector_variables_list '\n'  */
-#line 95 "parser.y"
-                                             {
-
-    }
-#line 1271 "parser.tab.c"
-    break;
-
-  case 19: /* statement: RETURN expression '\n'  */
-#line 98 "parser.y"
-                             {
-
-    }
-#line 1279 "parser.tab.c"
-    break;
-
-  case 20: /* statement: IF expression THEN statements ELSE statements  */
-#line 101 "parser.y"
-                                                    {
-
-    }
-#line 1287 "parser.tab.c"
-    break;
-
-  case 21: /* statement: DO statements UNTIL expression '\n'  */
-#line 104 "parser.y"
-                                          {
-
-    }
-#line 1295 "parser.tab.c"
-    break;
-
-  case 22: /* statement: expression '\n'  */
-#line 107 "parser.y"
-                      {
-
-    }
-#line 1303 "parser.tab.c"
-    break;
-
-  case 23: /* variables_list: variables_list ',' variable  */
-#line 113 "parser.y"
+  case 42: /* variables_list: variables_list ',' variable  */
+#line 205 "parser.y"
                                 {
-
+        for (auto pair: yyvsp[-2].variables)
+            yyval.variables.push_back(pair);
+        yyval.variables.push_back(yyvsp[0].variables.back());
     }
-#line 1311 "parser.tab.c"
+#line 1509 "parser.tab.c"
     break;
 
-  case 24: /* variables_list: variable  */
-#line 116 "parser.y"
+  case 43: /* variables_list: variable  */
+#line 210 "parser.y"
                {
-
+        yyval.variables.push_back(yyvsp[0].variables.back());   
     }
-#line 1319 "parser.tab.c"
+#line 1517 "parser.tab.c"
     break;
 
-  case 25: /* variable: NAME ASSIGN INTEGER_LITERAL  */
-#line 122 "parser.y"
+  case 44: /* variable: NAME ASSIGN INTEGER_LITERAL  */
+#line 216 "parser.y"
                                 {
-
+        yyval.variables.push_back(std::make_pair(yyvsp[-2].str_val, yyvsp[0].int_val));
     }
-#line 1327 "parser.tab.c"
+#line 1525 "parser.tab.c"
     break;
 
-  case 26: /* variable: NAME ASSIGN BOOL_LITERAL  */
-#line 125 "parser.y"
+  case 45: /* variable: NAME ASSIGN BOOL_LITERAL  */
+#line 219 "parser.y"
                                {
+        bool bool_val = false;
 
+        if (yyvsp[0].str_val == "true")
+            bool_val = true;
+        yyval.variables.push_back(std::make_pair(yyvsp[-2].str_val, bool_val));
     }
-#line 1335 "parser.tab.c"
+#line 1537 "parser.tab.c"
     break;
 
-  case 27: /* variable: NAME ASSIGN STRING_LITERAL  */
-#line 128 "parser.y"
+  case 46: /* variable: NAME ASSIGN STRING_LITERAL  */
+#line 226 "parser.y"
                                  {
-
+        yyval.variables.push_back(std::make_pair(yyvsp[-2].str_val, yyvsp[-1].str_val));
     }
-#line 1343 "parser.tab.c"
+#line 1545 "parser.tab.c"
     break;
 
-  case 28: /* variable: NAME  */
-#line 131 "parser.y"
+  case 47: /* variable: NAME  */
+#line 229 "parser.y"
            {
-
+        yyval.variables.push_back(std::make_pair(yyvsp[0].str_val, '\0'));
     }
-#line 1351 "parser.tab.c"
+#line 1553 "parser.tab.c"
     break;
 
-  case 29: /* vector_variables_list: vector_variables_list ',' vector_variable  */
-#line 137 "parser.y"
+  case 48: /* vector_variables_list: vector_variables_list ',' vector_variable  */
+#line 235 "parser.y"
                                               {
-
+        for (auto pair: yyvsp[-2].variables)
+            yyval.variables.push_back(pair);
+        yyval.variables.push_back(yyvsp[0].variables.back());
     }
-#line 1359 "parser.tab.c"
+#line 1563 "parser.tab.c"
     break;
 
-  case 30: /* vector_variables_list: vector_variable  */
-#line 140 "parser.y"
+  case 49: /* vector_variables_list: vector_variable  */
+#line 240 "parser.y"
                       {
-
+        yyval.variables.push_back(yyvsp[0].variables.back());
     }
-#line 1367 "parser.tab.c"
+#line 1571 "parser.tab.c"
     break;
 
-  case 31: /* vector_variable: NAME  */
-#line 146 "parser.y"
+  case 50: /* vector_variable: NAME  */
+#line 246 "parser.y"
          {
-
+        yyval.variables.push_back(std::make_pair(yyvsp[0].str_val, '\0'));
     }
-#line 1375 "parser.tab.c"
+#line 1579 "parser.tab.c"
     break;
 
-  case 32: /* expression: INTEGER_LITERAL  */
-#line 152 "parser.y"
-                    {
-        
+  case 51: /* bool_expression: BOOL_LITERAL  */
+#line 252 "parser.y"
+                 {
+        bool bool_val = false;
+
+        if (yyvsp[0].str_val == "true")
+            bool_val = true;
+        yyval.logical_op_variables = std::make_pair(bool_val, '\0');
     }
-#line 1383 "parser.tab.c"
+#line 1591 "parser.tab.c"
     break;
 
-  case 33: /* expression: BOOL_LITERAL  */
-#line 155 "parser.y"
-                   {
-
-    }
-#line 1391 "parser.tab.c"
-    break;
-
-  case 34: /* expression: STRING_LITERAL  */
-#line 158 "parser.y"
-                     {
-
-    }
-#line 1399 "parser.tab.c"
-    break;
-
-  case 35: /* expression: TYPE  */
-#line 161 "parser.y"
-           {
-
-    }
-#line 1407 "parser.tab.c"
-    break;
-
-  case 36: /* expression: expression ARITHMETIC_OP expression  */
-#line 164 "parser.y"
-                                          {
-
-    }
-#line 1415 "parser.tab.c"
-    break;
-
-  case 37: /* expression: expression LOGICAL_OP expression  */
-#line 167 "parser.y"
+  case 52: /* bool_expression: expression LOGICAL_OP expression  */
+#line 259 "parser.y"
                                        {
+        if (yyvsp[-2].is_int_val && yyvsp[0].is_int_val) {
+            yyval.logical_op_variables = std::make_pair(yyvsp[-2].int_val, yyvsp[0].int_val);
+            yyval.logical_op = yyvsp[-1].str_val;
+        }
+        else if (yyvsp[-2].is_bool_val && yyvsp[0].is_bool_val) {
+            bool first_bool_val = false;
+            bool second_bool_val = false;
 
+            if (yyvsp[-2].str_val == "true")
+                first_bool_val = true;
+            if (yyvsp[0].str_val == "true")
+                second_bool_val = true;
+            yyval.logical_op_variables = std::make_pair(first_bool_val, second_bool_val);
+            yyval.logical_op = yyvsp[-1].str_val;
+        }
+        else if (yyvsp[-2].is_str_val && yyvsp[0].is_str_val) {
+            yyval.logical_op_variables = std::make_pair(yyvsp[-2].str_val, yyvsp[0].str_val);
+            yyval.logical_op = yyvsp[-1].str_val;
+        }
+        else {
+            yyerror("Trying to execute logical operation using different types");
+            return 1;
+        }
     }
-#line 1423 "parser.tab.c"
+#line 1621 "parser.tab.c"
+    break;
+
+  case 53: /* bool_expression: expression '=' expression  */
+#line 284 "parser.y"
+                                {
+        if (yyvsp[-2].is_int_val && yyvsp[0].is_int_val) {
+            yyval.logical_op_variables = std::make_pair(yyvsp[-2].int_val, yyvsp[0].int_val);
+            yyval.logical_op = "=";
+        }
+        else if (yyvsp[-2].is_bool_val && yyvsp[0].is_bool_val) {
+            bool first_bool_val = false;
+            bool second_bool_val = false;
+
+            if (yyvsp[-2].str_val == "true")
+                first_bool_val = true;
+            if (yyvsp[0].str_val == "true")
+                second_bool_val = true;
+            yyval.logical_op_variables = std::make_pair(first_bool_val, second_bool_val);
+            yyval.logical_op = "=";
+        }
+        else if (yyvsp[-2].is_str_val && yyvsp[0].is_str_val) {
+            yyval.logical_op_variables = std::make_pair(yyvsp[-2].str_val, yyvsp[0].str_val);
+            yyval.logical_op = "=";
+        }
+        else {
+            yyerror("Trying to execute logical operation using different types");
+            return 1;
+        }
+    }
+#line 1651 "parser.tab.c"
+    break;
+
+  case 55: /* @2: %empty  */
+#line 312 "parser.y"
+                                          {
+        if (yyvsp[-2].is_int_val && yyvsp[0].is_int_val) {
+            yyval.is_int_val = true;
+            
+            if (yyvsp[-1].str_val == "+")
+                yyval.int_val = yyvsp[-2].int_val + yyvsp[0].int_val;
+            else 
+                yyval.int_val = yyvsp[-2].int_val - yyvsp[0].int_val;
+        } 
+        else if (yyvsp[-2].is_bool_val && yyvsp[0].is_bool_val) {
+            if (yyvsp[-2].str_val == "true" || yyvsp[0].str_val == "true") {
+                if (yyvsp[-1].str_val == "+")
+                    yyval.str_val = "true";
+                else 
+                    yyval.str_val = "false";
+            }
+            else {
+                if (yyvsp[-1].str_val == "+")
+                    yyval.str_val = "false";
+                else 
+                    yyval.str_val = "true";
+            }
+            yyval.is_bool_val = true;
+        }
+        else if (yyvsp[-2].is_str_val && yyvsp[0].is_str_val) {
+            if (yyvsp[-1].str_val == "+") 
+                yyval.str_val = yyvsp[-2].str_val + yyvsp[0].str_val;
+            else {
+                std::string result = yyvsp[-2].str_val;
+                size_t pos = result.find(yyvsp[0].str_val);
+
+                if (pos != std::string::npos)
+                    result.erase(pos, yyvsp[0].str_val.length());
+                yyval.str_val = result;    
+            }
+            yyval.is_str_val = true; 
+        }
+        else {
+            yyerror("Trying to execute arithmetic operation using different types");
+            return 1;
+        }
+    }
+#line 1698 "parser.tab.c"
+    break;
+
+  case 56: /* expression: expression ARITHMETIC_OP expression @2 NAME '[' INTEGER_LITERAL ']'  */
+#line 354 "parser.y"
+                                 {
+        if (yyvsp[-5].int_val < 0) {
+            yyerror("Trying to access an element of a vector with a negative index");
+            return 1;
+        }
+        yyval.is_vector = true;
+        yyval.int_val = yyvsp[-5].int_val;
+        yyval.str_val = yyvsp[-7].str_val;
+    }
+#line 1712 "parser.tab.c"
+    break;
+
+  case 57: /* expression: INTEGER_LITERAL  */
+#line 363 "parser.y"
+                      {
+        yyval.is_int_val = true;
+        yyval.int_val = yyvsp[0].int_val;
+    }
+#line 1721 "parser.tab.c"
+    break;
+
+  case 58: /* expression: BOOL_LITERAL  */
+#line 367 "parser.y"
+                   {
+        yyval.is_bool_val = true;
+        yyval.str_val = yyvsp[0].str_val;
+    }
+#line 1730 "parser.tab.c"
+    break;
+
+  case 59: /* expression: STRING_LITERAL  */
+#line 371 "parser.y"
+                     {
+        yyval.is_str_val = true;
+        yyval.str_val = yyvsp[0].str_val;
+    }
+#line 1739 "parser.tab.c"
+    break;
+
+  case 60: /* expression: NAME  */
+#line 375 "parser.y"
+           {
+        yyval.is_variable = true;
+        yyval.str_val = yyvsp[0].str_val;
+    }
+#line 1748 "parser.tab.c"
     break;
 
 
-#line 1427 "parser.tab.c"
+#line 1752 "parser.tab.c"
 
       default: break;
     }
@@ -1616,16 +1941,22 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 171 "parser.y"
+#line 380 "parser.y"
 
 
-void yyerror(const char* s) {
-    std::cerr << s << std::endl;
+void yyerror(std::string err_msg) {
+    std::cerr << err_msg << std::endl;
 }
 
 int main() {
-    if (yyparse() == 0)
-        std::cout << "Parsing completed successfully." << std::endl;
+    if (yyparse() == 0) {
+        std::cout << "Parsing completed successfully.";
+
+        if (is_error) {
+            std::cerr << reporter.err_msg << std::endl;
+            return 1;
+        }
+    }
     else {
         std::cerr << "Parsing failed." << std::endl;
         return 1;

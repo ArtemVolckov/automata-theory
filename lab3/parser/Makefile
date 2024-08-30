@@ -7,8 +7,12 @@ LEXER = lex.yy.c
 
 PARSER_SRC = parser.y
 PARSER = parser.tab.c
+PARSER_HEADER = parser.tab.h
 
 all: $(EXE)
+
+clean:
+	rm -f $(EXE) $(LEXER) $(PARSER) $(PARSER_HEADER)
 
 $(EXE): $(LEXER) $(PARSER) 
 	$(CC)  $^ -o $@
