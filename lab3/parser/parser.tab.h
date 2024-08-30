@@ -72,7 +72,10 @@ extern int yydebug;
     THEN = 273,                    /* THEN  */
     ELSE = 274,                    /* ELSE  */
     FUNCTION = 275,                /* FUNCTION  */
-    RETURN = 276                   /* RETURN  */
+    RETURN = 276,                  /* RETURN  */
+    MOVE = 277,                    /* MOVE  */
+    ROTATE = 278,                  /* ROTATE  */
+    ACTION = 279                   /* ACTION  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif

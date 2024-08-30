@@ -19,6 +19,10 @@ extern Reporter reporter;
 
 #endif
 
+const char WALL = '#';   
+const char EXIT = '$';  
+const char EMPTY = '0'; 
+                         
 enum class NodeType {
     FUNCTION_DECLARATION,
     FUNCTION_CALL,
@@ -30,7 +34,10 @@ enum class NodeType {
     NAME_TO_TYPE,
     IF,
     DO,
-    RETURN
+    RETURN,
+    MOVE,
+    ROTATE,
+    ACTION
 };
 
 typedef struct Node {
@@ -178,6 +185,21 @@ typedef struct Node {
             this->str_val = str_val;
         }
     }
+    // MOVE
+    Node(NodeType node_type, std::string str_val, int tmp) {
+        this->node_type = node_type;
+        this->str_val = str_val;
+    }
+    // ROTATE
+    Node(NodeType node_type, std::string str_val, bool tmp) {
+        this->node_type = node_type;
+        this->str_val = str_val;
+    }
+    // ACTION
+    Node(NodeType node_type, std::string str_val, char tmp) {
+        this->node_type = node_type;
+        this->str_val = str_val;
+    }
 
     ~Node() {
         for (Node* child: this->childrens)
@@ -196,6 +218,11 @@ class Ast {
         void ast_return(Node* return_node, int idx);
         void func_exec(Node* node, int idx);
         void ast_exec();
+        std::vector<std::vector<char>> field;
+        int stateX;
+        int stateY;
+        std::string direction = "up";
+        bool is_valid_move(int x, int y);
         
         ~Ast() {
             for (Node* child: functions)

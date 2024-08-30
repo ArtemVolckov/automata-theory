@@ -107,6 +107,13 @@ std::string bool_to_string(bool val) {
     return val ? "true" : "false";
 }
 
+bool Ast::is_valid_move(int x, int y) {
+    if (x < 0 || x >= this->field[0].size() || y < 0 || y >= this->field.size()) {
+        return false; 
+    }
+    return field[y][x] != WALL;
+}
+
 void Ast::func_exec(Node* node, int idx) {
     if (node->node_type == NodeType::FUNCTION_CALL) {
         bool is_call = false;
@@ -490,6 +497,102 @@ void Ast::func_exec(Node* node, int idx) {
     }
     else if (node->node_type == NodeType::RETURN) {
         this->ast_return(node, idx);
+    }
+    else if (node->node_type == NodeType::MOVE) {
+        std::string direction = node->str_val;
+        int x = this->stateX, y = this->stateY;
+
+        if (direction == "forward") {
+            if (this->direction == "up") {
+                y--;
+            }
+            else if (this->direction == "down") {
+                y++;
+            }
+            else if (this->direction == "left") {
+                x--;
+            }
+            else if (this->direction == "right") {
+                x++; 
+            }
+        }
+        else if (direction == "back") {
+            if (this->direction == "up") {
+                y++;
+            }
+            else if (this->direction == "down") {
+                y--;
+            }
+            else if (this->direction == "left") {
+                x++;
+            }
+            else if (this->direction == "right") {
+                x--;
+            }
+        }
+        else if (direction == "left") {
+            if (this->direction == "up") {
+                x--;
+            }
+            else if (this->direction == "down") {
+                x++;
+            }
+            else if (this->direction == "left") {
+                y++;
+            }
+            else if (this->direction == "right") {
+                y--;
+            }
+        }
+        else if (direction == "right") {
+            if (this->direction == "up") {
+                x++;
+            }
+            else if (this->direction == "down") {
+                x--;
+            }
+            else if (this->direction == "left") {
+                y--;
+            }
+            else if (this->direction == "right") {
+                y++;
+            }
+        }
+        if (this->is_valid_move(x, y)) {
+            this->stateX = x; 
+            this->stateY = y;
+
+            if (this->field[y][x] == EXIT) {
+                std::cout << "You are escaped!" << std::endl;
+            }
+        } 
+        else {
+            std::cout << "Movement is impossible: collision with an obstacle!" << std::endl;
+        }
+    }
+    else if (node->node_type == NodeType::ROTATE) {
+        std::string direction = node->str_val;
+
+        if (direction == "rotate_left") {
+            if (this->direction == "up")
+                this->direction = "left";
+            else if (this->direction == "down")
+                this->direction = "right";
+            else if (this->direction == "left")
+                this->direction = "down";
+            else if (this->direction == "right")
+                this->direction = "up";
+        }
+        else if (direction == "rotate_right") {
+            if (this->direction == "up")
+                this->direction = "right";
+            else if (this->direction == "down")
+                this->direction = "left";
+            else if (this->direction == "left")
+                this->direction = "up";
+            else if (this->direction == "right")
+                this->direction = "down";
+        }
     }
     for (Node* child: node->childrens)
         this->func_exec(child, idx);

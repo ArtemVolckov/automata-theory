@@ -19,6 +19,9 @@ true|false|undefined          { yylval.str_val = yytext; return BOOL_LITERAL; }
 \"[^\"]*\"|\'[^\']*\'         { std::string tmp_str = std::string(yytext); 
                                 yylval.str_val = tmp_str.substr(1, tmp_str.length() - 2); 
                                 return STRING_LITERAL;}
+right|left|forward|back       { yylval.str_val = yytext; return MOVE; }
+rotate_rigth|rotate_left      { yylval.str_val = yytext; return ROTATE; }
+lms|reflect|drill             { yylval.str_val = yytext; return ACTION; }
 boolean|integer|string        { yylval.str_val = yytext; return TYPE; }
 "vector of"                   { return VECTOR; }
 (push|pop)[ \t ]+(front|back) { yylval.str_val = yytext; return PUSH_POP_FRONT_BACK; }

@@ -1,4 +1,5 @@
 %{
+#include <fstream>
 #include "../ast/ast.hpp"
 
 Ast ast;
@@ -28,6 +29,7 @@ void yyerror(std::string err_msg);
 %token DO UNTIL 
 %token IF THEN ELSE 
 %token FUNCTION RETURN
+%token MOVE ROTATE ACTION
 
 %right '=' ASSIGN
 %left ARITHMETIC_OP
@@ -139,6 +141,15 @@ statement:
     }
     | RETURN expression '\n' {
         $$.new_node = new Node(NodeType::RETURN, $2.is_int_val, $2.is_bool_val, $2.is_str_val, $2.is_variable, $2.is_vector, $2.int_val, $2.str_val);
+    }
+    | MOVE '\n' {
+        $$.new_node = new Node(NodeType::MOVE, $1.str_val, 0);
+    }
+    | ROTATE '\n' {
+        $$.new_node = new Node(NodeType::ROTATE, $1.str_val, true);
+    }
+    | ACTION '\n' {
+        $$.new_node = new Node(NodeType::ACTION, $1.str_val, '\0');
     }
     ;
 
@@ -380,7 +391,52 @@ void yyerror(std::string err_msg) {
     std::cerr << err_msg << std::endl;
 }
 
-int main() {
+void print_field(const std::vector<std::vector<char>>& field) {
+    for (const auto& row : field) {
+        for (char cell : row) {
+            std::cout << cell;
+        }
+        std::cout << std::endl;
+    }
+}
+
+int main(int argc, char** argv) {
+    if (argc == 2) {
+        if (std::string(argv[1]) == "--robot") {
+            std::ifstream inputFile("field.txt");
+
+            if (!inputFile.is_open()) {
+                std::cerr << "Error: can not open the file!" << std::endl;
+                return 1; 
+            }
+            std::vector<std::vector<char>> field;
+            std::string line;
+            int rows = 0; 
+
+            while (std::getline(inputFile, line)) {
+                if (line.empty()) continue;
+
+                std::vector<char> row(line.begin(), line.end());
+                field.push_back(row);
+                rows++;
+            }
+            int startX = 0, startY = 0;
+            if (rows >= 2) {
+                std::vector<char> startCoordinatesVec = field[rows - 1];
+                std::string startCoordinates(startCoordinatesVec.begin(), startCoordinatesVec.end());
+                startX = startCoordinates[0] - '0'; 
+                startY = startCoordinates[1] - '0'; 
+            } 
+            print_field(field);
+
+            std::cout << "The starting coordinates of the robot: (" << startX << ", " << startY << ")" << std::endl;
+
+            inputFile.close(); 
+            ast.field = field;
+            ast.stateX = startX;
+            ast.stateY = startY;           
+        }
+    }
     if (yyparse() == 0) {
         if (is_error) {
             std::cerr << reporter.err_msg << std::endl;
