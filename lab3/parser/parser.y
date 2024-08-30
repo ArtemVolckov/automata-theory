@@ -1,6 +1,4 @@
 %{
-#include <iostream>
-#include <string>
 #include "../ast/ast.hpp"
 
 Ast ast;
@@ -44,10 +42,11 @@ program:
     ;
 
 function_declarations:
-    function_declarations function_declaration '\n' {
+    '\n'
+    | function_declarations function_declaration '\n' {
         ast.functions.push_back($2.new_node);
     }
-    function_declarations function_declaration {
+    | function_declarations function_declaration {
         ast.functions.push_back($2.new_node);
     }
     | function_declaration '\n' {
@@ -56,7 +55,6 @@ function_declarations:
     | function_declaration {
         ast.functions.push_back($1.new_node);
     }
-    | '\n'
     ;
 
 function_declaration:
@@ -103,8 +101,7 @@ parameter:
 
 statements:
     statements statement {
-        for (Node* new_node: $1.statements)
-            $$.statements.push_back(new_node);
+        $$.statements = std::move($1.statements);
         $$.statements.push_back($2.new_node);    
     }
     | statement {
@@ -385,12 +382,23 @@ void yyerror(std::string err_msg) {
 
 int main() {
     if (yyparse() == 0) {
-        std::cout << "Parsing completed successfully.";
+        if (is_error) {
+            std::cerr << reporter.err_msg << std::endl;
+            return 1;
+        }
+        ast.ast_prepare(); 
 
         if (is_error) {
             std::cerr << reporter.err_msg << std::endl;
             return 1;
         }
+        ast.ast_exec();
+        
+        if (is_error) {
+            std::cerr << reporter.err_msg << std::endl;
+            return 1; 
+        }
+        std::cout << "Parsing completed successfully." << std::endl;
     }
     else {
         std::cerr << "Parsing failed." << std::endl;

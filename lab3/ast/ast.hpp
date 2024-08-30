@@ -1,20 +1,23 @@
+#pragma once
+
+#include <iostream>
 #include <vector>
 #include <variant>
+#include <string>
+#include <unordered_set>
 
 typedef struct Reporter {
     std::string err_msg;
     void report(std::string err_msg);
 } Reporter;
 
-bool is_error = false;
-Reporter reporter;
+#ifndef GLOBAL_VARIABLES
+#define GLOBAL_VARIABLES
 
-void Reporter::report(std::string err_msg) {
-    if (is_error == false) {
-        this->err_msg = err_msg;
-        is_error = true;
-    }
-}
+extern bool is_error;
+extern Reporter reporter;
+
+#endif
 
 enum class NodeType {
     FUNCTION_DECLARATION,
@@ -39,11 +42,13 @@ typedef struct Node {
     std::pair<std::variant<int, bool, std::string>, std::variant<int, bool, std::string, char>> logical_op_variables;
     std::string logical_op;
     std::vector<Node*> childrens;
+    std::vector<std::vector<Node*>> statements_list;
     bool is_int_val, is_bool_val, is_str_val, is_variable, is_vector; 
     int int_val; 
     std::string str_val;
     std::string push_pop_front_back;
     std::string name_from, name_to;
+    //std::vector<std::vector
 
     // FUNCTION_DECLARATION
     Node(NodeType node_type, std::string type, std::string name, std::vector<std::pair<std::variant<std::string, char>, std::variant<int, bool, std::string, char>>> variables, std::vector<Node*> statements, bool is_elipsis) {
@@ -52,9 +57,8 @@ typedef struct Node {
        this->type = type;
        this->variables = variables;
 
-       if (statements.size() == 0)
+       if (statements.size() == 0) 
            reporter.report("Error: function definition with no statements");
-           is_error = true;
        this->childrens = statements; 
        this->is_elipsis = is_elipsis;
     }
@@ -147,7 +151,10 @@ typedef struct Node {
     }
     // DO
     Node(NodeType node_type, std::vector<Node*> statements, std::pair<std::variant<int, bool, std::string>, std::variant<int, bool, std::string, char>> logical_op_variables, std::string logical_op) {
-
+        this->node_type = node_type;
+        this->childrens = statements;
+        this->logical_op_variables = logical_op_variables;
+        this->logical_op = logical_op;
     } 
     // RETURN
     Node(NodeType node_type, bool is_int_val, bool is_bool_val, bool is_str_val, bool is_is_variable, bool is_vector, int int_val, std::string str_val) {
@@ -171,9 +178,27 @@ typedef struct Node {
             this->str_val = str_val;
         }
     }
+
+    ~Node() {
+        for (Node* child: this->childrens)
+            delete child;
+    }
 } Node;
 
 class Ast {
     public:
         std::vector<Node*> functions;
+        std::vector<std::vector<std::pair<std::variant<std::string, char>, std::variant<int, bool, std::string, char>>>> variables_list;
+        std::vector<std::pair<std::string, std::vector<int>>> int_vectors_list; 
+        std::vector<std::pair<std::string, std::vector<bool>>> bool_vectors_list; 
+        std::vector<std::pair<std::string, std::vector<std::string>>> string_vectors_list; 
+        void ast_prepare();
+        void ast_return(Node* return_node, int idx);
+        void func_exec(Node* node, int idx);
+        void ast_exec();
+        
+        ~Ast() {
+            for (Node* child: functions)
+                delete child;
+        }
 };

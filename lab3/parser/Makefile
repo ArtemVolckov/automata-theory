@@ -1,4 +1,4 @@
-CC = g++
+CC = g++ -g
 
 EXE = lab3
 
@@ -9,12 +9,14 @@ PARSER_SRC = parser.y
 PARSER = parser.tab.c
 PARSER_HEADER = parser.tab.h
 
+AST_SRC = ../ast/ast.cpp
+
 all: $(EXE)
 
 clean:
 	rm -f $(EXE) $(LEXER) $(PARSER) $(PARSER_HEADER)
 
-$(EXE): $(LEXER) $(PARSER) 
+$(EXE): $(LEXER) $(PARSER) $(AST_SRC)
 	$(CC)  $^ -o $@
 
 $(LEXER): $(LEXER_SRC)

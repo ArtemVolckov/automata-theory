@@ -1,0 +1,2 @@
+function of integer application ()
+    integer a := 5

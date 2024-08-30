@@ -1,2 +1,6 @@
-function of integer main ()
-    integer a
+function of integer some_func ()
+    return 5
+
+function of boolean application ()
+    some_func()
+    return true
