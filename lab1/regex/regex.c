@@ -71,6 +71,6 @@ int main(int argc, const char* argv[]) {
         print_function(&regex, buf);
     }
     regfree(&regex);
-    printf("Total time spent using regex: %.9lf seconds\n", total_time_spent);
+    //printf("Total time spent using regex: %.9lf seconds\n", total_time_spent);
     return 0;
 }
