@@ -8,8 +8,7 @@ char *allnum           = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ01
 char *blank            = "\t ";
 char *hyphen           = "-"; 
 
-void gen_allnum_dot_slash(char *str, int *pos, int max_len) 
-{
+void gen_command(char *str, int *pos, int max_len) {
   *pos = rand() % max_len;
 
   for (int i = 0; i <= *pos; ++i) 
@@ -17,29 +16,24 @@ void gen_allnum_dot_slash(char *str, int *pos, int max_len)
   (*pos)++;  
 }
 
-void gen_allnum(char* str, int* pos) 
-{
+void gen_allnum(char* str, int* pos) {
   str[*pos] = allnum[rand() % 62];
-  *pos += 1;
+  (*pos) += 1;
 }
 
-void gen_blank(char* str, int* pos) 
-{
+void gen_blank(char* str, int* pos) {
   str[*pos] = blank[rand() % 2];
-  *pos += 1;
+  (*pos) += 1;
 }
 
-void gen_hyphen(char* str, int* pos) 
-{
+void gen_hyphen(char* str, int* pos) {
   str[*pos] = hyphen[0];
-  *pos += 1;
+  (*pos) += 1;
 }
 
-void gen_strings(int *params) 
-{
+void gen_strings(int *params) {
   int key_len, remaining, pos;
   char buf[BUF_SIZE] = {0};
-
   srand(time(0));
 
   for (int i = 0; i < params[0]; ++i) {
@@ -47,7 +41,7 @@ void gen_strings(int *params)
     pos = 0;
 
     if (params[1] != 0) 
-      gen_allnum_dot_slash(buf, &pos, params[1]); /* Command */
+      gen_command(buf, &pos, params[1]);
 
     while (remaining >= 3) {
       key_len = (rand() % remaining);
@@ -75,8 +69,7 @@ void gen_strings(int *params)
   }
 }
 
-int main(int argc, const char* argv[]) 
-{
+int main(int argc, const char* argv[]) {
   /* params[0] -> number of strings
    * params[1] -> max command length
    * params[2] -> max keylitst length */
